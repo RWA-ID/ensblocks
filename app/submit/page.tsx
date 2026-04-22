@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
@@ -14,6 +14,13 @@ export default function SubmitPage() {
   const { openConnectModal } = useConnectModal()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [pendingConnect, setPendingConnect] = useState(false)
+
+  useEffect(() => {
+    if (isConnected && pendingConnect) {
+      setPendingConnect(false)
+    }
+  }, [isConnected, pendingConnect])
 
   const [form, setForm] = useState({
     ens_domain: '',
@@ -28,6 +35,7 @@ export default function SubmitPage() {
     contact_telegram: '',
     contact_twitter: '',
     contact_discord: '',
+    website_url: '',
     github_url: '',
     demo_url: '',
     ipfs_pitch_deck: '',
@@ -78,7 +86,7 @@ export default function SubmitPage() {
         <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-6 mb-8 text-center">
           <p className="text-[#8888AA] mb-4">Connect your wallet to submit a project.</p>
           <button
-            onClick={() => openConnectModal?.()}
+            onClick={() => { setPendingConnect(true); openConnectModal?.() }}
             className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors"
           >
             Connect Wallet
@@ -222,10 +230,11 @@ export default function SubmitPage() {
         </div>
 
         {/* Links */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {([
-            { field: 'github_url' as const, placeholder: 'GitHub URL' },
-            { field: 'demo_url' as const, placeholder: 'Demo URL' },
+            { field: 'website_url' as const, placeholder: 'Project Website URL (https://…)' },
+            { field: 'github_url' as const, placeholder: 'GitHub URL (optional)' },
+            { field: 'demo_url' as const, placeholder: 'Live Demo URL (optional)' },
           ]).map(({ field, placeholder }) => (
             <input
               key={field}

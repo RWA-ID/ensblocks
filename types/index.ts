@@ -12,6 +12,7 @@ export interface Project {
   contact_telegram?: string
   contact_twitter?: string
   contact_discord?: string
+  website_url?: string
   github_url?: string
   demo_url?: string
   ipfs_pitch_deck?: string

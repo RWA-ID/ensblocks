@@ -102,6 +102,12 @@ export default function ProjectPage() {
 
           {/* Links */}
           <div className="flex flex-wrap gap-3 mb-8">
+            {project.website_url && (
+              <a href={project.website_url} target="_blank" rel="noreferrer"
+                className="flex items-center gap-1.5 text-sm text-[#8888AA] hover:text-[#F0F0FF] border border-[#2A2A3E] rounded-full px-3 py-1.5 transition-colors">
+                Website ↗
+              </a>
+            )}
             {project.github_url && (
               <a href={project.github_url} target="_blank" rel="noreferrer"
                 className="flex items-center gap-1.5 text-sm text-[#8888AA] hover:text-[#F0F0FF] border border-[#2A2A3E] rounded-full px-3 py-1.5 transition-colors">
