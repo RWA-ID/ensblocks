@@ -7,7 +7,7 @@ import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { Project } from '@/types'
 import Link from 'next/link'
 import DonateButton from '@/components/donate/DonateButton'
-import FundProjectModal from '@/components/modals/FundProjectModal'
+import XMTPChatModal from '@/components/modals/XMTPChatModal'
 import { useDonationTotal } from '@/hooks/useDonationTotal'
 import ReactMarkdown from 'react-markdown'
 
@@ -160,7 +160,7 @@ export default function ProjectPage() {
               onClick={handleFundClick}
               className="w-full py-2.5 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] text-sm font-medium hover:bg-[#6C63FF]/10 transition-colors"
             >
-              {isConnected ? 'Fund This Project' : 'Connect to Fund'}
+              {isConnected ? '💬 Message Founder' : 'Connect to Message'}
             </button>
 
             <div className="border-t border-[#2A2A3E] pt-4 space-y-2 text-xs text-[#8888AA]">
@@ -203,7 +203,13 @@ export default function ProjectPage() {
         </Link>
       </div>
 
-      {fundOpen && <FundProjectModal project={project} onClose={() => setFundOpen(false)} />}
+      {fundOpen && (
+        <XMTPChatModal
+          recipientAddress={project.wallet_address}
+          recipientName={project.founder_name}
+          onClose={() => setFundOpen(false)}
+        />
+      )}
       {lightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"

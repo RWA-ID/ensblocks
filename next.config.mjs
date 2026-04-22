@@ -3,6 +3,7 @@ const isIPFS = process.env.BUILD_TARGET === 'ipfs'
 
 const nextConfig = {
   ...(isIPFS ? { output: 'export', trailingSlash: true, images: { unoptimized: true } } : {}),
+  serverExternalPackages: ['@xmtp/user-preferences-bindings-wasm'],
   webpack(config) {
     // Stub optional wallet connector peer deps we don't use
     const stubs = [
