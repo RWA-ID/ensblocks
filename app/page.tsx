@@ -1,0 +1,127 @@
+import Link from 'next/link'
+import { supabaseAdmin } from '@/lib/supabase'
+import { Project, CATEGORIES } from '@/types'
+import ProjectCard from '@/components/project/ProjectCard'
+import SponsorCard from '@/components/sponsor/SponsorCard'
+import DonateButton from '@/components/donate/DonateButton'
+
+async function getFeatured(): Promise<Project[]> {
+  const db = supabaseAdmin()
+  const { data } = await db.from('projects').select('*').order('donation_total', { ascending: false }).limit(6)
+  return (data ?? []) as Project[]
+}
+
+async function getNewest(): Promise<Project[]> {
+  const db = supabaseAdmin()
+  const { data } = await db.from('projects').select('*').order('created_at', { ascending: false }).limit(8)
+  return (data ?? []) as Project[]
+}
+
+export default async function HomePage() {
+  const [featured, newest] = await Promise.all([getFeatured(), getNewest()])
+  const platformWallet = process.env.NEXT_PUBLIC_PLATFORM_WALLET ?? '0x0000000000000000000000000000000000000000'
+
+  return (
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden py-28 px-4 text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(108,99,255,0.12)_0%,_transparent_70%)] pointer-events-none" />
+        <div className="relative max-w-3xl mx-auto">
+          <h1 className="font-sora text-4xl sm:text-6xl font-extrabold text-[#F0F0FF] leading-tight mb-4">
+            Discover Projects<br />
+            <span className="text-[#6C63FF]">Built on ENS</span>
+          </h1>
+          <p className="text-[#8888AA] text-lg sm:text-xl mb-8">
+            The home of Ethereum-native builders.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/explore"
+              className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors"
+            >
+              Explore Projects
+            </Link>
+            <Link
+              href="/submit"
+              className="px-8 py-3 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] font-medium hover:bg-[#6C63FF]/10 transition-colors"
+            >
+              Submit Yours →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Projects */}
+      {featured.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6">Featured Projects</h2>
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4">
+            {featured.map(p => (
+              <div key={p.id} className="flex-shrink-0 w-72">
+                <ProjectCard project={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* New Projects */}
+      {newest.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6">New Projects</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {newest.map(p => <ProjectCard key={p.id} project={p} />)}
+          </div>
+        </section>
+      )}
+
+      {/* Empty state */}
+      {featured.length === 0 && newest.length === 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-20 text-center">
+          <p className="text-[#8888AA] text-lg mb-4">No projects yet.</p>
+          <Link href="/submit" className="text-[#6C63FF] hover:underline">Be the first to submit →</Link>
+        </section>
+      )}
+
+      {/* Categories */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6">Explore by Category</h2>
+        <div className="flex flex-wrap gap-3">
+          {CATEGORIES.map(cat => (
+            <Link
+              key={cat}
+              href={`/explore?category=${cat}`}
+              className="px-4 py-2 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#6C63FF] hover:text-[#F0F0FF] transition-colors"
+            >
+              {cat}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Donate to Platform */}
+      <section className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+        <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-8">
+          <h2 className="font-sora text-xl font-bold text-[#F0F0FF] mb-2">Support the Platform</h2>
+          <p className="text-[#8888AA] text-sm mb-4">
+            Donations help us keep ensblocks.eth running and free for everyone.
+          </p>
+          <p className="font-mono text-xs text-[#6C63FF] mb-4 break-all">{platformWallet}</p>
+          <div className="max-w-xs mx-auto">
+            <DonateButton recipientAddress={platformWallet} projectId="platform" />
+          </div>
+        </div>
+      </section>
+
+      {/* Sponsors */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6 text-center">Our Sponsors</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+          <SponsorCard />
+          <SponsorCard />
+          <SponsorCard />
+        </div>
+      </section>
+    </div>
+  )
+}
