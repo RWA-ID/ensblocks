@@ -7,6 +7,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { CATEGORIES } from '@/types'
 import IPFSUploader from '@/components/upload/IPFSUploader'
 import { useENSVerify } from '@/hooks/useENSVerify'
+import { useENSResolve } from '@/hooks/useENSResolve'
 
 export default function SubmitPage() {
   const router = useRouter()
@@ -44,6 +45,20 @@ export default function SubmitPage() {
   })
 
   const { verified: ensVerified, isChecking: ensChecking } = useENSVerify(form.ens_domain)
+
+  const [walletInput, setWalletInput] = useState('')
+  const isWalletENS = walletInput.includes('.')
+  const { resolvedAddress: resolvedWallet, isResolving: walletResolving } = useENSResolve(
+    isWalletENS ? walletInput : ''
+  )
+
+  useEffect(() => {
+    if (isWalletENS) {
+      setForm(f => ({ ...f, wallet_address: resolvedWallet ?? '' }))
+    } else {
+      setForm(f => ({ ...f, wallet_address: walletInput }))
+    }
+  }, [walletInput, isWalletENS, resolvedWallet])
 
   function set(field: string, value: unknown) {
     setForm(f => ({ ...f, [field]: value }))
@@ -192,20 +207,30 @@ export default function SubmitPage() {
         {/* Wallet address */}
         <div>
           <label className="block text-sm text-[#F0F0FF] mb-1.5">
-            Donation Wallet Address *
+            Donation Wallet *
             {isConnected && (
-              <button type="button" onClick={() => set('wallet_address', address ?? '')} className="ml-2 text-xs text-[#6C63FF] hover:underline">
+              <button type="button" onClick={() => setWalletInput(address ?? '')} className="ml-2 text-xs text-[#6C63FF] hover:underline">
                 use connected
               </button>
             )}
           </label>
-          <input
-            required
-            placeholder={address ?? '0x…'}
-            value={form.wallet_address}
-            onChange={e => set('wallet_address', e.target.value)}
-            className="w-full bg-[#12121A] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm font-mono text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF]"
-          />
+          <div className="relative">
+            <input
+              required
+              placeholder="yourname.eth or 0x…"
+              value={walletInput}
+              onChange={e => setWalletInput(e.target.value)}
+              className="w-full bg-[#12121A] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF] pr-28"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs">
+              {isWalletENS && walletResolving && <span className="text-[#8888AA]">resolving…</span>}
+              {isWalletENS && !walletResolving && resolvedWallet && <span className="text-green-400">✓ resolved</span>}
+              {isWalletENS && !walletResolving && !resolvedWallet && walletInput.length > 3 && <span className="text-red-400">not found</span>}
+            </div>
+          </div>
+          {isWalletENS && resolvedWallet && (
+            <p className="mt-1 text-xs text-[#8888AA] font-mono">{resolvedWallet}</p>
+          )}
         </div>
 
         {/* Contact */}
@@ -215,7 +240,7 @@ export default function SubmitPage() {
             {([
               { field: 'contact_email' as const, placeholder: 'Email' },
               { field: 'contact_telegram' as const, placeholder: 'Telegram handle' },
-              { field: 'contact_twitter' as const, placeholder: 'X/Twitter handle' },
+              { field: 'contact_twitter' as const, placeholder: 'X handle (no @)' },
               { field: 'contact_discord' as const, placeholder: 'Discord handle' },
             ]).map(({ field, placeholder }) => (
               <input
