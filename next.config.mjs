@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
+const isIPFS = process.env.BUILD_TARGET === 'ipfs'
+
 const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  images: { unoptimized: true },
+  ...(isIPFS ? { output: 'export', trailingSlash: true, images: { unoptimized: true } } : {}),
   webpack(config) {
     // Stub optional wallet connector peer deps we don't use
     const stubs = [
