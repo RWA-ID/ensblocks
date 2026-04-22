@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { Project, CATEGORIES } from '@/types'
 import ProjectCard from '@/components/project/ProjectCard'
 import SponsorCard from '@/components/sponsor/SponsorCard'
-import DonateButton from '@/components/donate/DonateButton'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
@@ -93,19 +92,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Donate to Platform */}
-      {platformWallet && (
-        <section className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-8">
-            <h2 className="font-sora text-xl font-bold text-[#F0F0FF] mb-2">Support the Platform</h2>
-            <p className="text-[#8888AA] text-sm mb-4">Donations help us keep ensblocks.eth running and free for everyone.</p>
-            <p className="font-mono text-xs text-[#6C63FF] mb-4 break-all">{platformWallet}</p>
-            <div className="max-w-xs mx-auto">
-              <DonateButton recipientAddress={platformWallet} projectId="platform" />
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Sponsors */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
