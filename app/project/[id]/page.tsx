@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useAccount } from 'wagmi'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Project } from '@/types'
 import Link from 'next/link'
 import DonateButton from '@/components/donate/DonateButton'
@@ -14,7 +14,7 @@ import ReactMarkdown from 'react-markdown'
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>()
   const { isConnected } = useAccount()
-  const { open: openWallet } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
   const [fundOpen, setFundOpen] = useState(false)
@@ -32,7 +32,7 @@ export default function ProjectPage() {
   function handleFundClick() {
     if (!isConnected) {
       pendingFund.current = true
-      openWallet()
+      openConnectModal?.()
       return
     }
     setFundOpen(true)

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { CATEGORIES } from '@/types'
 import IPFSUploader from '@/components/upload/IPFSUploader'
 import { useENSVerify } from '@/hooks/useENSVerify'
@@ -11,7 +11,7 @@ import { useENSVerify } from '@/hooks/useENSVerify'
 export default function SubmitPage() {
   const router = useRouter()
   const { address, isConnected } = useAccount()
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -43,7 +43,7 @@ export default function SubmitPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault()
-    if (!isConnected || !address) { open(); return }
+    if (!isConnected || !address) { openConnectModal?.(); return }
     setSubmitting(true)
     setError('')
     try {
@@ -78,7 +78,7 @@ export default function SubmitPage() {
         <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-6 mb-8 text-center">
           <p className="text-[#8888AA] mb-4">Connect your wallet to submit a project.</p>
           <button
-            onClick={() => open()}
+            onClick={() => openConnectModal?.()}
             className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors"
           >
             Connect Wallet

@@ -1,12 +1,11 @@
 'use client'
 
-import { createConfig, http } from 'wagmi'
+import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { mainnet } from 'wagmi/chains'
 
-export const wagmiConfig = createConfig({
+export const wagmiConfig = getDefaultConfig({
+  appName: 'ensblocks.eth',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? '',
   chains: [mainnet],
-  transports: {
-    [mainnet.id]: http(process.env.NEXT_PUBLIC_ALCHEMY_MAINNET_RPC || 'https://eth-mainnet.g.alchemy.com/v2/demo'),
-  },
   ssr: true,
 })

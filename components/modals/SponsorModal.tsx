@@ -3,9 +3,7 @@
 import { useState } from 'react'
 
 const TIERS = [
-  { id: 'builder', emoji: '🥉', name: 'Builder', price: '0.1 ETH/mo', perks: 'Logo in sponsors section, link to your site' },
-  { id: 'founder', emoji: '🥈', name: 'Founder', price: '0.5 ETH/mo', perks: 'Featured card, banner on explore page, priority listing' },
-  { id: 'protocol', emoji: '🥇', name: 'Protocol', price: '1 ETH/mo', perks: 'Hero section placement, newsletter mention, dedicated blog post' },
+  { id: 'protocol', emoji: '🥇', name: 'Protocol', price: '1 ETH/mo', perks: 'Hero placement, newsletter mention, dedicated blog post, priority listing' },
 ]
 
 interface SponsorModalProps {

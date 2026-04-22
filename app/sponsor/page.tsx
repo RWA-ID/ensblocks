@@ -3,9 +3,7 @@
 import { useRef, useState } from 'react'
 
 const TIERS = [
-  { id: 'builder', emoji: '🥉', name: 'Builder', price: '0.1 ETH/mo', perks: ['Logo in sponsors section', 'Link to your site'] },
-  { id: 'founder', emoji: '🥈', name: 'Founder', price: '0.5 ETH/mo', perks: ['Featured card', 'Banner on explore page', 'Priority listing'] },
-  { id: 'protocol', emoji: '🥇', name: 'Protocol', price: '1 ETH/mo', perks: ['Hero section placement', 'Newsletter mention', 'Dedicated blog post'] },
+  { id: 'protocol', emoji: '🥇', name: 'Protocol', price: '1 ETH/mo', perks: ['Hero section placement', 'Newsletter mention', 'Dedicated blog post', 'Logo in Protocol Sponsors section', 'Priority project listing'] },
 ]
 
 export default function SponsorPage() {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useAccount, useSendTransaction } from 'wagmi'
 import { parseEther } from 'viem'
 import { useRouter } from 'next/navigation'
@@ -15,7 +15,7 @@ interface DonateButtonProps {
 type State = 'idle' | 'amount' | 'sending' | 'success' | 'error'
 
 export default function DonateButton({ recipientAddress, projectId, compact }: DonateButtonProps) {
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
   const { sendTransactionAsync } = useSendTransaction()
   const router = useRouter()
@@ -45,7 +45,7 @@ export default function DonateButton({ recipientAddress, projectId, compact }: D
   function handleClick() {
     if (!isConnected) {
       pendingDonate.current = true
-      open()
+      openConnectModal?.()
       return
     }
     if (state === 'idle') setState('amount')

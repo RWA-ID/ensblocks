@@ -109,11 +109,10 @@ export default function HomePage() {
 
       {/* Sponsors */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6 text-center">Our Sponsors</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-          <SponsorCard />
-          <SponsorCard />
-          <SponsorCard />
+        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-2 text-center">Protocol Sponsors</h2>
+        <p className="text-[#8888AA] text-sm text-center mb-8">Protocols powering the ENS discovery layer</p>
+        <div className="flex justify-center">
+          <SponsorCard ctaMode="page" />
         </div>
       </section>
     </div>

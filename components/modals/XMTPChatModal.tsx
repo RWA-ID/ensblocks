@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Client } from '@xmtp/xmtp-js'
 import { createEOASigner } from '@/lib/xmtp'
 
@@ -17,7 +17,7 @@ type Message = { id: string; senderAddress: string; content: string; sent: Date 
 export default function XMTPChatModal({ recipientAddress, recipientName, onClose }: XMTPChatModalProps) {
   const { address, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
-  const { open } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
 
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -32,7 +32,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   }, [messages])
 
   async function connect() {
-    if (!isConnected) { open(); return }
+    if (!isConnected) { openConnectModal?.(); return }
     if (!walletClient || !address) return
     setStatus('connecting')
     try {
