@@ -19,7 +19,6 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   const { data: walletClient } = useWalletClient()
   const { open } = useWeb3Modal()
 
-  const [client, setClient] = useState<Client | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'connecting' | 'ready' | 'error'>('idle')
@@ -40,7 +39,6 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
       const signer = createEOASigner(address, walletClient)
       // @ts-expect-error — XMTP signer type compat
       const xmtp = await Client.create(signer, { env: 'production' })
-      setClient(xmtp)
 
       const can = await Client.canMessage(recipientAddress)
       setCanMessage(can)
