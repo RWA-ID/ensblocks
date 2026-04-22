@@ -19,8 +19,6 @@ export default function HomePage() {
       .then(r => r.json()).then(d => setNewest((d ?? []).slice(0, 8)))
   }, [])
 
-  const platformWallet = process.env.NEXT_PUBLIC_PLATFORM_WALLET ?? ''
-
   return (
     <div>
       {/* Hero */}
