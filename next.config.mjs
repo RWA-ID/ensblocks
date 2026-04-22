@@ -4,9 +4,16 @@ const nextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   webpack(config) {
-    config.resolve.alias['@base-org/account'] = false
-    config.resolve.alias['porto/internal'] = false
-    config.resolve.alias['@coinbase/wallet-sdk'] = false
+    // Stub optional wallet connector peer deps we don't use
+    const stubs = [
+      '@base-org/account',
+      'porto/internal',
+      '@coinbase/wallet-sdk',
+      '@metamask/connect-evm',
+      '@metamask/sdk',
+      'accounts',
+    ]
+    stubs.forEach(mod => { config.resolve.alias[mod] = false })
     return config
   },
 }
