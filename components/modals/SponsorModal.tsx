@@ -43,7 +43,7 @@ export default function SponsorModal({ onClose, defaultTier = '' }: SponsorModal
           <div className="text-center py-10">
             <p className="text-2xl mb-2">🎉</p>
             <p className="text-[#F0F0FF] font-semibold">Inquiry sent!</p>
-            <p className="text-[#8888AA] text-sm mt-1">We'll be in touch soon.</p>
+            <p className="text-[#8888AA] text-sm mt-1">We&apos;ll be in touch soon.</p>
           </div>
         ) : (
           <>

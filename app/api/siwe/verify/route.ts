@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     await session.save()
 
     return NextResponse.json({ ok: true, address: data.address })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ ok: false, error: 'Verification failed' }, { status: 422 })
   }
 }

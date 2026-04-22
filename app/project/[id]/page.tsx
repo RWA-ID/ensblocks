@@ -189,7 +189,7 @@ export default function ProjectPage() {
 
             <div className="border-t border-[#2A2A3E] pt-3">
               <p className="text-[10px] text-yellow-400/70">
-                ⚠ This platform does not custody funds. All donations go directly to project owners' wallets.
+                ⚠ This platform does not custody funds. All donations go directly to project owners&apos; wallets.
               </p>
             </div>
           </div>

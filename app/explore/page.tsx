@@ -17,12 +17,7 @@ function ExploreContent() {
   const [sort, setSort] = useState(params.get('sort') ?? 'donation_total')
   const category = params.get('category') ?? ''
 
-  useEffect(() => {
-    setPage(1)
-    setProjects([])
-    load(1)
-  }, [category, sort, q])
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function load(p: number) {
     setLoading(true)
     const sp = new URLSearchParams({ page: String(p), sort })
@@ -35,6 +30,13 @@ function ExploreContent() {
     setHasMore(data.length === 12)
     setLoading(false)
   }
+
+  useEffect(() => {
+    setPage(1)
+    setProjects([])
+    load(1)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, sort, q])
 
   function loadMore() {
     const next = page + 1

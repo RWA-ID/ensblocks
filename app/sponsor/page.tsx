@@ -83,7 +83,7 @@ export default function SponsorPage() {
           <div className="text-center py-8">
             <p className="text-3xl mb-3">🎉</p>
             <p className="text-[#F0F0FF] font-semibold">Inquiry sent!</p>
-            <p className="text-[#8888AA] text-sm mt-1">We'll reach out within 48 hours.</p>
+            <p className="text-[#8888AA] text-sm mt-1">We&apos;ll reach out within 48 hours.</p>
             <button
               onClick={() => setResult('')}
               className="mt-4 text-xs text-[#6C63FF] hover:underline"
