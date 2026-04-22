@@ -1,25 +1,26 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabaseAdmin } from '@/lib/supabase'
 import { Project, CATEGORIES } from '@/types'
 import ProjectCard from '@/components/project/ProjectCard'
 import SponsorCard from '@/components/sponsor/SponsorCard'
 import DonateButton from '@/components/donate/DonateButton'
 
-async function getFeatured(): Promise<Project[]> {
-  const db = supabaseAdmin()
-  const { data } = await db.from('projects').select('*').order('donation_total', { ascending: false }).limit(6)
-  return (data ?? []) as Project[]
-}
+const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
-async function getNewest(): Promise<Project[]> {
-  const db = supabaseAdmin()
-  const { data } = await db.from('projects').select('*').order('created_at', { ascending: false }).limit(8)
-  return (data ?? []) as Project[]
-}
+export default function HomePage() {
+  const [featured, setFeatured] = useState<Project[]>([])
+  const [newest, setNewest] = useState<Project[]>([])
 
-export default async function HomePage() {
-  const [featured, newest] = await Promise.all([getFeatured(), getNewest()])
-  const platformWallet = process.env.NEXT_PUBLIC_PLATFORM_WALLET ?? '0x0000000000000000000000000000000000000000'
+  useEffect(() => {
+    fetch(`${API}/api/projects?sort=donation_total&page=1`)
+      .then(r => r.json()).then(d => setFeatured((d ?? []).slice(0, 6)))
+    fetch(`${API}/api/projects?sort=newest&page=1`)
+      .then(r => r.json()).then(d => setNewest((d ?? []).slice(0, 8)))
+  }, [])
+
+  const platformWallet = process.env.NEXT_PUBLIC_PLATFORM_WALLET ?? ''
 
   return (
     <div>
@@ -35,16 +36,10 @@ export default async function HomePage() {
             The home of Ethereum-native builders.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/explore"
-              className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors"
-            >
+            <Link href="/explore" className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors">
               Explore Projects
             </Link>
-            <Link
-              href="/submit"
-              className="px-8 py-3 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] font-medium hover:bg-[#6C63FF]/10 transition-colors"
-            >
+            <Link href="/submit" className="px-8 py-3 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] font-medium hover:bg-[#6C63FF]/10 transition-colors">
               Submit Yours →
             </Link>
           </div>
@@ -75,7 +70,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Empty state */}
       {featured.length === 0 && newest.length === 0 && (
         <section className="max-w-7xl mx-auto px-4 py-20 text-center">
           <p className="text-[#8888AA] text-lg mb-4">No projects yet.</p>
@@ -100,18 +94,18 @@ export default async function HomePage() {
       </section>
 
       {/* Donate to Platform */}
-      <section className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-        <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-8">
-          <h2 className="font-sora text-xl font-bold text-[#F0F0FF] mb-2">Support the Platform</h2>
-          <p className="text-[#8888AA] text-sm mb-4">
-            Donations help us keep ensblocks.eth running and free for everyone.
-          </p>
-          <p className="font-mono text-xs text-[#6C63FF] mb-4 break-all">{platformWallet}</p>
-          <div className="max-w-xs mx-auto">
-            <DonateButton recipientAddress={platformWallet} projectId="platform" />
+      {platformWallet && (
+        <section className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+          <div className="bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl p-8">
+            <h2 className="font-sora text-xl font-bold text-[#F0F0FF] mb-2">Support the Platform</h2>
+            <p className="text-[#8888AA] text-sm mb-4">Donations help us keep ensblocks.eth running and free for everyone.</p>
+            <p className="font-mono text-xs text-[#6C63FF] mb-4 break-all">{platformWallet}</p>
+            <div className="max-w-xs mx-auto">
+              <DonateButton recipientAddress={platformWallet} projectId="platform" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Sponsors */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
