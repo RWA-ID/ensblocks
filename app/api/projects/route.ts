@@ -52,10 +52,26 @@ export async function POST(req: Request) {
   }
 
   const { data, error } = await db.from('projects').insert({
-    ...body,
-    submitter_address: submitterAddress,
+    ens_domain: body.ens_domain?.toLowerCase(),
+    name: body.name,
+    tagline: body.tagline,
+    category: body.category,
+    short_desc: body.short_desc,
+    long_desc: body.long_desc,
+    founder_name: body.founder_name,
     wallet_address: getAddress(body.wallet_address),
-    ens_domain: body.ens_domain.toLowerCase(),
+    contact_email: body.contact_email || null,
+    contact_telegram: body.contact_telegram || null,
+    contact_twitter: body.contact_twitter || null,
+    contact_discord: body.contact_discord || null,
+    website_url: body.website_url || null,
+    github_url: body.github_url || null,
+    demo_url: body.demo_url || null,
+    ipfs_pitch_deck: body.ipfs_pitch_deck || null,
+    ipfs_images: body.ipfs_images?.length ? body.ipfs_images : null,
+    seeking_funding: body.seeking_funding ?? false,
+    submitter_address: submitterAddress,
+    verified_ens_owner: body.verified_ens_owner ?? false,
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
