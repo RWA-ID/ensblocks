@@ -69,24 +69,28 @@ export default function ProjectPage() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start gap-3 flex-wrap mb-2">
-            <h1 className="font-sora text-3xl font-bold text-[#F0F0FF]">{project.name}</h1>
-            <span className="text-sm font-mono text-[#6C63FF] border border-[#6C63FF]/30 rounded-full px-3 py-0.5">
-              {project.ens_domain}
-            </span>
-            <span className="text-xs px-2 py-1 rounded-full bg-[#1A1A26] border border-[#2A2A3E] text-[#8888AA]">
-              {project.category}
-            </span>
+          <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="font-sora text-3xl font-bold text-[#F0F0FF]">{project.name}</h1>
+              <span className="text-sm font-mono text-[#6C63FF] border border-[#6C63FF]/30 rounded-full px-3 py-0.5">
+                {project.ens_domain}
+              </span>
+              <span className="text-xs px-2 py-1 rounded-full bg-[#1A1A26] border border-[#2A2A3E] text-[#8888AA]">
+                {project.category}
+              </span>
+            </div>
             <a
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\n${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors"
+              className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors flex-shrink-0"
             >
               𝕏 Share
             </a>
           </div>
-          <p className="text-[#8888AA] text-sm mb-1">by {project.founder_name}</p>
+          {project.founder_name && (
+            <p className="text-[#8888AA] text-sm mb-1">by {project.founder_name}</p>
+          )}
           <p className="text-[#F0F0FF] text-lg font-medium mb-6">{project.tagline}</p>
           <p className="text-[#8888AA] mb-8">{project.short_desc}</p>
 
@@ -196,10 +200,11 @@ export default function ProjectPage() {
         </div>
       </div>
 
-      {/* Submit Another */}
-      <div className="mt-8 text-center">
-        <Link href="/submit" className="text-sm text-[#8888AA] hover:text-[#6C63FF] transition-colors">
-          + Submit Another Project
+      {/* CTA */}
+      <div className="mt-8 text-center space-y-2">
+        <p className="text-[#8888AA] text-sm">Have a project built on ENS?</p>
+        <Link href="/submit" className="inline-block px-6 py-2.5 rounded-full bg-[#6C63FF] text-white text-sm font-medium hover:bg-[#5A52E0] transition-colors">
+          Submit Your Project
         </Link>
       </div>
 
