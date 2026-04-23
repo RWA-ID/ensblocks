@@ -26,54 +26,71 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const submitter = req.headers.get('x-submitter')
-  if (!submitter) return NextResponse.json({ error: 'Wallet not connected' }, { status: 401 })
-
-  let submitterAddress: string
   try {
-    submitterAddress = getAddress(submitter)
-  } catch {
-    return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 })
+    const submitter = req.headers.get('x-submitter')
+    if (!submitter) return NextResponse.json({ error: 'Wallet not connected' }, { status: 401 })
+
+    let submitterAddress: string
+    try {
+      submitterAddress = getAddress(submitter)
+    } catch {
+      return NextResponse.json({ error: 'Invalid submitter address' }, { status: 400 })
+    }
+
+    const body = await req.json()
+
+    if (!body.wallet_address) {
+      return NextResponse.json({ error: 'Donation wallet address is required' }, { status: 400 })
+    }
+
+    let walletAddress: string
+    try {
+      walletAddress = getAddress(body.wallet_address)
+    } catch {
+      return NextResponse.json({ error: 'Invalid donation wallet address — make sure your ENS resolved correctly' }, { status: 400 })
+    }
+
+    const db = supabaseAdmin()
+
+    // Rate limit: 5 per wallet per hour
+    const hourAgo = new Date(Date.now() - 3600000).toISOString()
+    const { count } = await db
+      .from('projects')
+      .select('*', { count: 'exact', head: true })
+      .eq('submitter_address', submitterAddress)
+      .gte('created_at', hourAgo)
+
+    if ((count ?? 0) >= 5) {
+      return NextResponse.json({ error: 'Rate limit: max 5 submissions per hour' }, { status: 429 })
+    }
+
+    const { data, error } = await db.from('projects').insert({
+      ens_domain: body.ens_domain?.toLowerCase(),
+      name: body.name,
+      tagline: body.tagline,
+      category: body.category,
+      short_desc: body.short_desc,
+      long_desc: body.long_desc,
+      founder_name: body.founder_name,
+      wallet_address: walletAddress,
+      contact_email: body.contact_email || null,
+      contact_telegram: body.contact_telegram || null,
+      contact_twitter: body.contact_twitter || null,
+      contact_discord: body.contact_discord || null,
+      website_url: body.website_url || null,
+      github_url: body.github_url || null,
+      demo_url: body.demo_url || null,
+      ipfs_pitch_deck: body.ipfs_pitch_deck || null,
+      ipfs_images: body.ipfs_images?.length ? body.ipfs_images : null,
+      seeking_funding: body.seeking_funding ?? false,
+      submitter_address: submitterAddress,
+      verified_ens_owner: body.verified_ens_owner ?? false,
+    }).select().single()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data, { status: 201 })
+  } catch (e: unknown) {
+    console.error('POST /api/projects error:', e)
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'Unexpected server error' }, { status: 500 })
   }
-
-  const body = await req.json()
-  const db = supabaseAdmin()
-
-  // Rate limit: 5 per wallet per hour
-  const hourAgo = new Date(Date.now() - 3600000).toISOString()
-  const { count } = await db
-    .from('projects')
-    .select('*', { count: 'exact', head: true })
-    .eq('submitter_address', submitterAddress)
-    .gte('created_at', hourAgo)
-
-  if ((count ?? 0) >= 5) {
-    return NextResponse.json({ error: 'Rate limit: max 5 submissions per hour' }, { status: 429 })
-  }
-
-  const { data, error } = await db.from('projects').insert({
-    ens_domain: body.ens_domain?.toLowerCase(),
-    name: body.name,
-    tagline: body.tagline,
-    category: body.category,
-    short_desc: body.short_desc,
-    long_desc: body.long_desc,
-    founder_name: body.founder_name,
-    wallet_address: getAddress(body.wallet_address),
-    contact_email: body.contact_email || null,
-    contact_telegram: body.contact_telegram || null,
-    contact_twitter: body.contact_twitter || null,
-    contact_discord: body.contact_discord || null,
-    website_url: body.website_url || null,
-    github_url: body.github_url || null,
-    demo_url: body.demo_url || null,
-    ipfs_pitch_deck: body.ipfs_pitch_deck || null,
-    ipfs_images: body.ipfs_images?.length ? body.ipfs_images : null,
-    seeking_funding: body.seeking_funding ?? false,
-    submitter_address: submitterAddress,
-    verified_ens_owner: body.verified_ens_owner ?? false,
-  }).select().single()
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data, { status: 201 })
 }
