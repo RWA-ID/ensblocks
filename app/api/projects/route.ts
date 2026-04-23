@@ -53,14 +53,22 @@ export async function POST(req: Request) {
     const db = supabaseAdmin()
 
     // Rate limit: 5 per wallet per hour
-    const hourAgo = new Date(Date.now() - 3600000).toISOString()
-    const { count } = await db
-      .from('projects')
-      .select('*', { count: 'exact', head: true })
-      .eq('submitter_address', submitterAddress)
-      .gte('created_at', hourAgo)
+    let count = 0
+    try {
+      const hourAgo = new Date(Date.now() - 3600000).toISOString()
+      const { count: c, error: rateErr } = await db
+        .from('projects')
+        .select('*', { count: 'exact', head: true })
+        .eq('submitter_address', submitterAddress)
+        .gte('created_at', hourAgo)
+      if (rateErr) console.error('rate limit query error:', rateErr)
+      count = c ?? 0
+    } catch (rateEx) {
+      console.error('rate limit exception:', rateEx)
+      return NextResponse.json({ error: 'rate-limit-check-failed: ' + String(rateEx) }, { status: 500 })
+    }
 
-    if ((count ?? 0) >= 5) {
+    if (count >= 5) {
       return NextResponse.json({ error: 'Rate limit: max 5 submissions per hour' }, { status: 429 })
     }
 
