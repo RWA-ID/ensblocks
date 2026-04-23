@@ -3,8 +3,14 @@ const isIPFS = process.env.BUILD_TARGET === 'ipfs'
 
 const nextConfig = {
   ...(isIPFS ? { output: 'export', trailingSlash: true, images: { unoptimized: true } } : {}),
-  experimental: { serverComponentsExternalPackages: ['@xmtp/user-preferences-bindings-wasm'] },
-  webpack(config) {
+  experimental: {
+    serverComponentsExternalPackages: [
+      '@xmtp/user-preferences-bindings-wasm',
+      'viem',
+      'ox',
+    ],
+  },
+  webpack(config, { isServer }) {
     // Stub optional wallet connector peer deps we don't use
     const stubs = [
       '@base-org/account',
@@ -15,6 +21,15 @@ const nextConfig = {
       'accounts',
     ]
     stubs.forEach(mod => { config.resolve.alias[mod] = false })
+
+    // Prevent ox/viem tempo module from running in Node (it uses indexedDB)
+    if (isServer) {
+      config.resolve.alias['ox/_esm/tempo/internal/virtualMasterPool'] = false
+      config.resolve.alias['ox/_esm/tempo/internal/virtualMasterPool.js'] = false
+      config.resolve.alias['ox/_esm/tempo/VirtualMaster'] = false
+      config.resolve.alias['ox/_esm/tempo/VirtualMaster.js'] = false
+    }
+
     return config
   },
 }

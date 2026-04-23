@@ -11,7 +11,7 @@ export function useDonationTotal(walletAddress: string): DonationTotal {
 
   useEffect(() => {
     if (!walletAddress) return
-    fetch(`/api/donations/${walletAddress}`)
+    fetch(`/api/donations?wallet=${walletAddress}`)
       .then(r => r.json())
       .then(d => setData({ total: d.total, count: d.count, isLoading: false }))
       .catch(() => setData({ total: '0', count: 0, isLoading: false }))

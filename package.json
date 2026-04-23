@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:ipfs": "BUILD_TARGET=ipfs NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL next build",
+    "build:ipfs": "node scripts/build-ipfs.mjs",
     "start": "next start",
     "lint": "next lint"
   },

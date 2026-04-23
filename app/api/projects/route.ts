@@ -4,13 +4,24 @@ import { getAddress } from 'viem'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
+  const db = supabaseAdmin()
+
+  // Single project lookup: /api/projects?id=xxx
+  const id = searchParams.get('id')
+  if (id) {
+    const { data, error } = await db.from('projects').select('*').eq('id', id).single()
+    if (error || !data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    return NextResponse.json(data, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
+    })
+  }
+
   const category = searchParams.get('category')
   const sort = searchParams.get('sort') ?? 'donation_total'
   const search = searchParams.get('q')
   const page = parseInt(searchParams.get('page') ?? '1')
   const limit = 12
 
-  const db = supabaseAdmin()
   let query = db.from('projects').select('*').range((page - 1) * limit, page * limit - 1)
 
   if (category) query = query.eq('category', category)
