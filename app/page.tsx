@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Project, CATEGORIES } from '@/types'
+import { Project } from '@/types'
 import ProjectCard from '@/components/project/ProjectCard'
 import SponsorCard from '@/components/sponsor/SponsorCard'
 
@@ -75,22 +75,6 @@ export default function HomePage() {
       )}
 
       {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-6">Explore by Category</h2>
-        <div className="flex flex-wrap gap-3">
-          {CATEGORIES.map(cat => (
-            <Link
-              key={cat}
-              href={`/explore?category=${cat}`}
-              className="px-4 py-2 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#6C63FF] hover:text-[#F0F0FF] transition-colors"
-            >
-              {cat}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-
       {/* Sponsors */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-2 text-center">Protocol Sponsors</h2>

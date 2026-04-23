@@ -13,7 +13,7 @@ import ReactMarkdown from 'react-markdown'
 
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>()
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
@@ -80,7 +80,7 @@ export default function ProjectPage() {
               </span>
             </div>
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\n${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.link/project/${project.id}`)}`}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors flex-shrink-0"
@@ -170,7 +170,7 @@ export default function ProjectPage() {
               onClick={handleFundClick}
               className="w-full py-2.5 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] text-sm font-medium hover:bg-[#6C63FF]/10 transition-colors"
             >
-              {isConnected ? '💬 Message Founder' : 'Connect to Message'}
+              {isConnected && address?.toLowerCase() === project.wallet_address?.toLowerCase() ? '📬 Messages' : isConnected ? '💬 Message Founder' : 'Connect to Message'}
             </button>
 
             <div className="border-t border-[#2A2A3E] pt-4 space-y-2 text-xs text-[#8888AA]">
