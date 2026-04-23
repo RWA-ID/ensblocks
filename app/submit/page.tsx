@@ -85,7 +85,7 @@ export default function SubmitPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      router.push(`/project/${data.id}`)
+      router.push('/explore')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Submission failed')
       setSubmitting(false)

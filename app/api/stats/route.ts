@@ -13,5 +13,7 @@ export async function GET() {
   const totalDonated = (donationsRes.data ?? []).reduce((sum, d) => sum + Number(d.amount_eth), 0)
   const fundedProjects = (projectsRes.data ?? []).filter(p => Number(p.donation_total) > 0).length
 
-  return NextResponse.json({ totalProjects, totalDonated, fundedProjects })
+  return NextResponse.json({ totalProjects, totalDonated, fundedProjects }, {
+    headers: { 'Cache-Control': 'no-store' },
+  })
 }
