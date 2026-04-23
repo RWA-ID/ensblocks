@@ -17,7 +17,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-[#F0F0FF] font-semibold mb-2">3. No Custody of Funds</h2>
-          <p>ensblocks.eth does not custody, hold, or control any funds. Donations are direct peer-to-peer on-chain transfers between the donor's wallet and the project's wallet address. We are not responsible for any lost, misdirected, or erroneous transactions.</p>
+          <p>ensblocks.eth does not custody, hold, or control any funds. Donations are direct peer-to-peer on-chain transfers between the donor&apos;s wallet and the project&apos;s wallet address. We are not responsible for any lost, misdirected, or erroneous transactions.</p>
         </section>
 
         <section>
@@ -37,7 +37,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-[#F0F0FF] font-semibold mb-2">7. Limitation of Liability</h2>
-          <p>The platform is provided "as is" without warranties of any kind. We are not liable for any damages arising from your use of the platform, including any loss of funds due to smart contract interactions or third-party services.</p>
+          <p>The platform is provided &quot;as is&quot; without warranties of any kind. We are not liable for any damages arising from your use of the platform, including any loss of funds due to smart contract interactions or third-party services.</p>
         </section>
 
         <section>
