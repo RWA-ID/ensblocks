@@ -23,7 +23,7 @@ function ExploreContent() {
     const sp = new URLSearchParams({ page: String(p), sort })
     if (category) sp.set('category', category)
     if (q) sp.set('q', q)
-    const res = await fetch(`/api/projects?${sp.toString()}`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/projects?${sp.toString()}`)
     const data: Project[] = await res.json()
     if (p === 1) setProjects(data)
     else setProjects(prev => [...prev, ...data])

@@ -15,7 +15,7 @@ export function useENSResolve(ensDomain: string): ENSResolveResult {
     }
     setResult(r => ({ ...r, isResolving: true }))
     const timer = setTimeout(() => {
-      fetch(`/api/ens-resolve?name=${encodeURIComponent(ensDomain)}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/ens-resolve?name=${encodeURIComponent(ensDomain)}`)
         .then(r => r.json())
         .then(({ address }) => setResult({ resolvedAddress: address ?? null, isResolving: false }))
         .catch(() => setResult({ resolvedAddress: null, isResolving: false }))

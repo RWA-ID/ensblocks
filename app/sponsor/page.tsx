@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 
 const TIERS = [
-  { id: 'protocol', emoji: '🥇', name: 'Protocol', price: '1 ETH/mo', perks: ['Hero section placement', 'Newsletter mention', 'Dedicated blog post', 'Logo in Protocol Sponsors section', 'Priority project listing'] },
+  { id: 'protocol', emoji: '🥇', name: 'Protocol Sponsor', price: '1 ETH/mo', spots: 5, perks: ['Logo in the Protocol Sponsors section on homepage', 'Permanent placement for the duration of sponsorship', 'Only 5 spots available'] },
 ]
 
 export default function SponsorPage() {
@@ -45,11 +45,11 @@ export default function SponsorPage() {
       </div>
 
       {/* Tier cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+      <div className="flex justify-center mb-16">
         {TIERS.map(t => (
           <div
             key={t.id}
-            className={`bg-[#1A1A26] border rounded-2xl p-6 flex flex-col transition-all ${
+            className={`bg-[#1A1A26] border rounded-2xl p-6 flex flex-col transition-all w-full max-w-sm ${
               tier === t.id ? 'border-[#6C63FF] shadow-[0_0_20px_rgba(108,99,255,0.2)]' : 'border-[#2A2A3E]'
             }`}
           >

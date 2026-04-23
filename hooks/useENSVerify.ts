@@ -21,7 +21,7 @@ export function useENSVerify(ensDomain: string): ENSVerifyResult {
       return
     }
     setResult(r => ({ ...r, isChecking: true }))
-    fetch(`/api/ens-resolve?name=${encodeURIComponent(ensDomain)}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/ens-resolve?name=${encodeURIComponent(ensDomain)}`)
       .then(r => r.json())
       .then(({ address: resolved }) => {
         setResult({
