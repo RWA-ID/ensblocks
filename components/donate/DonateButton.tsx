@@ -33,7 +33,8 @@ export default function DonateButton({ recipientAddress, projectId, compact }: D
   useEffect(() => {
     if (isConnected && pendingDonate.current) {
       pendingDonate.current = false
-      if (compact) {
+      const isRealProject = /^[0-9a-f-]{36}$/.test(projectId)
+      if (compact && isRealProject) {
         router.push(`/project/${projectId}`)
       } else {
         setState('amount')
