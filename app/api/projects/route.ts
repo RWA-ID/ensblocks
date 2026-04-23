@@ -1,6 +1,30 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { getAddress } from 'viem'
+import { createPublicClient, http, getAddress, namehash } from 'viem'
+import { mainnet } from 'viem/chains'
+
+const ENS_REGISTRY = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' as const
+const ENS_REGISTRY_ABI = [
+  { name: 'owner', type: 'function', stateMutability: 'view',
+    inputs: [{ name: 'node', type: 'bytes32' }],
+    outputs: [{ name: '', type: 'address' }] },
+] as const
+
+async function getEnsOwner(domain: string): Promise<string | null> {
+  try {
+    const client = createPublicClient({
+      chain: mainnet,
+      transport: http(process.env.ALCHEMY_MAINNET_RPC),
+    })
+    const node = namehash(domain)
+    const owner = await client.readContract({
+      address: ENS_REGISTRY, abi: ENS_REGISTRY_ABI, functionName: 'owner', args: [node],
+    })
+    return owner as string
+  } catch {
+    return null
+  }
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -61,6 +85,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid donation wallet address — make sure your ENS resolved correctly' }, { status: 400 })
     }
 
+    // Verify ENS ownership on-chain
+    const ensDomain = body.ens_domain?.toLowerCase()
+    if (!ensDomain) {
+      return NextResponse.json({ error: 'ENS domain is required' }, { status: 400 })
+    }
+    const ensOwner = await getEnsOwner(ensDomain)
+    if (!ensOwner) {
+      return NextResponse.json({ error: 'Could not verify ENS ownership — please try again' }, { status: 400 })
+    }
+    if (ensOwner.toLowerCase() !== submitterAddress.toLowerCase()) {
+      return NextResponse.json({ error: `You must be the owner of ${ensDomain} to submit this project` }, { status: 403 })
+    }
+
     const db = supabaseAdmin()
 
     // Rate limit: 5 per wallet per hour
@@ -103,7 +140,7 @@ export async function POST(req: Request) {
       ipfs_images: body.ipfs_images?.length ? body.ipfs_images : null,
       seeking_funding: body.seeking_funding ?? false,
       submitter_address: submitterAddress,
-      verified_ens_owner: body.verified_ens_owner ?? false,
+      verified_ens_owner: true,
     }).select().single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })

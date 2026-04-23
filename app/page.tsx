@@ -8,6 +8,11 @@ import ProtocolSponsors from '@/components/sponsor/ProtocolSponsors'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 const PLATFORM_WALLET = process.env.NEXT_PUBLIC_PLATFORM_WALLET ?? ''
+const VERCEL_URL = process.env.NEXT_PUBLIC_API_URL ?? ''
+
+function projectUrl(id: string) {
+  return `${VERCEL_URL}/project/${id}`
+}
 
 interface Stats { totalProjects: number; totalDonated: number; fundedProjects: number }
 
@@ -251,7 +256,7 @@ function FeaturedCard({ project }: { project: Project }) {
   const coverImage = project.ipfs_images?.[0]
 
   return (
-    <Link href={`/project/${project.id}`}>
+    <a href={projectUrl(project.id)} target="_blank" rel="noreferrer">
       <article className="featured-card group relative shrink-0 w-[340px] sm:w-[380px] rounded-[22px] overflow-hidden">
         {coverImage ? (
           <img src={`https://gateway.pinata.cloud/ipfs/${coverImage}`} alt={project.name} className="w-full aspect-[4/3] object-cover" />
@@ -277,7 +282,7 @@ function FeaturedCard({ project }: { project: Project }) {
           </div>
         </div>
       </article>
-    </Link>
+    </a>
   )
 }
 
@@ -344,7 +349,7 @@ function NewCard({ project, hero, delay }: { project: Project; hero?: boolean; d
   }, [delay])
 
   return (
-    <Link href={`/project/${project.id}`}>
+    <a href={projectUrl(project.id)} target="_blank" rel="noreferrer">
       <article
         ref={ref}
         className={`new-card relative rounded-[20px] overflow-hidden transition-all duration-700 cursor-pointer ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${hero ? 'new-card-hero md:col-span-2 md:row-span-2' : ''}`}
@@ -376,7 +381,7 @@ function NewCard({ project, hero, delay }: { project: Project; hero?: boolean; d
           </div>
         </div>
       </article>
-    </Link>
+    </a>
   )
 }
 
