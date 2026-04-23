@@ -8,15 +8,20 @@ import SponsorCard from '@/components/sponsor/SponsorCard'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
+interface Stats { totalProjects: number; totalDonated: number; fundedProjects: number }
+
 export default function HomePage() {
   const [featured, setFeatured] = useState<Project[]>([])
   const [newest, setNewest] = useState<Project[]>([])
+  const [stats, setStats] = useState<Stats | null>(null)
 
   useEffect(() => {
     fetch(`${API}/api/projects?sort=donation_total&page=1`)
       .then(r => r.json()).then(d => setFeatured((d ?? []).slice(0, 6)))
     fetch(`${API}/api/projects?sort=newest&page=1`)
       .then(r => r.json()).then(d => setNewest((d ?? []).slice(0, 8)))
+    fetch(`${API}/api/stats`)
+      .then(r => r.json()).then(setStats)
   }, [])
 
   return (
@@ -42,6 +47,26 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Stats bar */}
+      {stats && (
+        <section className="border-y border-[#2A2A3E] bg-[#0D0D14]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-3 divide-x divide-[#2A2A3E]">
+            <div className="text-center px-4">
+              <p className="font-sora text-2xl font-bold text-[#F0F0FF]">{stats.totalProjects}</p>
+              <p className="text-xs text-[#8888AA] mt-1">Projects Listed</p>
+            </div>
+            <div className="text-center px-4">
+              <p className="font-sora text-2xl font-bold text-[#00D4FF]">Ξ {stats.totalDonated.toFixed(3)}</p>
+              <p className="text-xs text-[#8888AA] mt-1">Total Donated</p>
+            </div>
+            <div className="text-center px-4">
+              <p className="font-sora text-2xl font-bold text-[#6C63FF]">{stats.fundedProjects}</p>
+              <p className="text-xs text-[#8888AA] mt-1">Projects Funded</p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Projects */}
       {featured.length > 0 && (
