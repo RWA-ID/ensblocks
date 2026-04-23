@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useAccount, useSendTransaction } from 'wagmi'
 import { parseEther } from 'viem'
-import { useRouter } from 'next/navigation'
 
 interface DonateButtonProps {
   recipientAddress: string
@@ -18,30 +17,20 @@ export default function DonateButton({ recipientAddress, projectId, compact }: D
   const { openConnectModal } = useConnectModal()
   const { isConnected } = useAccount()
   const { sendTransactionAsync } = useSendTransaction()
-  const router = useRouter()
 
   const [state, setState] = useState<State>('idle')
   const [amount, setAmount] = useState('0.01')
   const [txHash, setTxHash] = useState('')
   const [error, setError] = useState('')
 
-  // Track whether the user clicked donate while disconnected
   const pendingDonate = useRef(false)
-  // On compact cards, redirect to project page after connecting instead of donating inline
-  const wasDisconnected = useRef(!isConnected)
 
   useEffect(() => {
     if (isConnected && pendingDonate.current) {
       pendingDonate.current = false
-      const isRealProject = /^[0-9a-f-]{36}$/.test(projectId)
-      if (compact && isRealProject) {
-        router.push(`/project/${projectId}`)
-      } else {
-        setState('amount')
-      }
+      setState('amount')
     }
-    wasDisconnected.current = !isConnected
-  }, [isConnected, compact, projectId, router])
+  }, [isConnected])
 
   function handleClick() {
     if (!isConnected) {
