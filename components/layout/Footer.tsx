@@ -18,10 +18,13 @@ export default function Footer() {
           </div>
 
           {/* Nav */}
-          <div className="flex items-center gap-6 text-sm text-[#8888AA]">
+          <div className="flex flex-wrap items-center gap-5 text-sm text-[#8888AA]">
             <Link href="/explore" className="hover:text-[#F0F0FF] transition-colors">Explore</Link>
             <Link href="/submit" className="hover:text-[#F0F0FF] transition-colors">Submit Project</Link>
             <Link href="/sponsor" className="hover:text-[#F0F0FF] transition-colors">Sponsor</Link>
+            <a href="https://github.com/RWA-ID/ensblocks" target="_blank" rel="noreferrer" className="hover:text-[#F0F0FF] transition-colors">GitHub</a>
+            <Link href="/privacy" className="hover:text-[#F0F0FF] transition-colors">Privacy</Link>
+            <Link href="/terms" className="hover:text-[#F0F0FF] transition-colors">Terms</Link>
           </div>
 
           {/* Support the platform */}

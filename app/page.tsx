@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Project } from '@/types'
 import ProjectCard from '@/components/project/ProjectCard'
-import SponsorCard from '@/components/sponsor/SponsorCard'
+import ProtocolSponsors from '@/components/sponsor/ProtocolSponsors'
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? ''
 
@@ -35,7 +35,7 @@ export default function HomePage() {
             <span className="text-[#6C63FF]">Built on ENS</span>
           </h1>
           <p className="text-[#8888AA] text-lg sm:text-xl mb-8">
-            The home of Ethereum-native builders.
+            The Showcase Layer For ENS Builders
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/explore" className="px-8 py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors">
@@ -99,15 +99,8 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Categories */}
       {/* Sponsors */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="font-sora text-2xl font-bold text-[#F0F0FF] mb-2 text-center">Protocol Sponsors</h2>
-        <p className="text-[#8888AA] text-sm text-center mb-8">Protocols powering the ENS discovery layer</p>
-        <div className="flex justify-center">
-          <SponsorCard ctaMode="page" />
-        </div>
-      </section>
+      <ProtocolSponsors />
     </div>
   )
 }

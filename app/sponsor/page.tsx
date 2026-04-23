@@ -8,7 +8,7 @@ const TIERS = [
 
 export default function SponsorPage() {
   const formRef = useRef<HTMLDivElement>(null)
-  const [tier, setTier] = useState('')
+  const [tier, setTier] = useState(TIERS[0].id)
   const [result, setResult] = useState('')
 
   function selectTier(id: string) {
