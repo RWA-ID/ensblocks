@@ -48,7 +48,7 @@ export default function DonateButton({ recipientAddress, projectId, compact }: D
         to: recipientAddress as `0x${string}`,
         value: parseEther(amount),
       })
-      await fetch('/api/donations', {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/donations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ projectId, txHash: hash, to: recipientAddress, amount }),

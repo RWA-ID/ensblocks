@@ -20,7 +20,7 @@ export default function SponsorModal({ onClose, defaultTier = '' }: SponsorModal
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setSending(true)
-    await fetch('/api/sponsor-inquiry', {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/sponsor-inquiry`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...form, tier }),

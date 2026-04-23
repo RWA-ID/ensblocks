@@ -70,7 +70,7 @@ export default function SubmitPage() {
     setSubmitting(true)
     setError('')
     try {
-      const res = await fetch('/api/projects', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/projects`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
