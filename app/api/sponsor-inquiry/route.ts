@@ -3,16 +3,23 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const { name, company, email, tier, message } = body
+  const { name, email, url, logo_url, message } = body
 
-  if (!name || !company || !email || !tier) {
+  if (!name || !email) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
   const db = supabaseAdmin()
-  await db.from('sponsor_inquiries').insert({ name, company, email, tier, message })
+  await db.from('sponsor_inquiries').insert({
+    name,
+    company: name,
+    email,
+    tier: 'protocol-slot',
+    url: url ?? null,
+    logo_url: logo_url ?? null,
+    message: message ?? null,
+  })
 
-  // Send email via Resend if configured
   if (process.env.RESEND_API_KEY) {
     await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -23,8 +30,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         from: 'ensblocks.eth <noreply@ensblocks.eth>',
         to: process.env.SPONSOR_INQUIRY_EMAIL ?? 'info@onchain-id.id',
-        subject: `New Sponsor Inquiry: ${tier} tier from ${company}`,
-        text: `Name: ${name}\nCompany: ${company}\nEmail: ${email}\nTier: ${tier}\nMessage: ${message ?? 'N/A'}`,
+        subject: `New Sponsor Inquiry from ${name}`,
+        text: `Protocol: ${name}\nEmail: ${email}\nURL: ${url ?? 'N/A'}\nLogo: ${logo_url ?? 'N/A'}\nMessage: ${message ?? 'N/A'}`,
       }),
     }).catch(() => {})
   }

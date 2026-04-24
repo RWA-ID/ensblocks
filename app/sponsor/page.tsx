@@ -1,156 +1,101 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { SponsorForm } from '@/components/modals/SponsorModal'
 
-const TIERS = [
-  { id: 'protocol', emoji: '🥇', name: 'Protocol Sponsor', price: '1 ETH/mo', spots: 5, perks: ['Logo in the Protocol Sponsors section on homepage', 'Permanent placement for the duration of sponsorship', 'Only 5 spots available'] },
+const WHAT_YOU_GET = [
+  { icon: '◈', label: 'Dedicated slot in the Protocol Sponsors grid on the homepage' },
+  { icon: '◎', label: 'Your logo displayed and linked to your product or service page' },
+  { icon: '⬡', label: 'Visible to every ENS builder who visits ensblocks.eth' },
 ]
 
 export default function SponsorPage() {
-  const formRef = useRef<HTMLDivElement>(null)
-  const [tier, setTier] = useState(TIERS[0].id)
-  const [result, setResult] = useState('')
-
-  function selectTier(id: string) {
-    setTier(id)
-    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setResult('Sending…')
-    const formData = new FormData(e.currentTarget)
-    formData.append('access_key', '746aef4e-9fa2-4942-af24-c7c983fc727e')
-    formData.append('subject', `New Sponsor Inquiry: ${tier} tier`)
-
-    const response = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: formData,
-    })
-    const data = await response.json()
-    if (data.success) {
-      setResult('success')
-      ;(e.target as HTMLFormElement).reset()
-      setTier('')
-    } else {
-      setResult('error')
-    }
-  }
-
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div className="text-center mb-12">
-        <h1 className="font-sora text-4xl font-extrabold text-[#F0F0FF] mb-3">Sponsor ensblocks.eth</h1>
-        <p className="text-[#8888AA] text-lg">Reach ENS builders, founders, and the Web3 community.</p>
+    <div className="relative min-h-screen">
+      {/* aurora background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full" style={{
+          background: 'radial-gradient(circle, rgba(108,99,255,0.12), transparent 60%)',
+          filter: 'blur(80px)', transform: 'translate(-30%, -20%)',
+        }} />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full" style={{
+          background: 'radial-gradient(circle, rgba(0,212,255,0.08), transparent 60%)',
+          filter: 'blur(80px)', transform: 'translate(20%, -20%)',
+        }} />
       </div>
 
-      {/* Tier cards */}
-      <div className="flex justify-center mb-16">
-        {TIERS.map(t => (
-          <div
-            key={t.id}
-            className={`bg-[#1A1A26] border rounded-2xl p-6 flex flex-col transition-all w-full max-w-sm ${
-              tier === t.id ? 'border-[#6C63FF] shadow-[0_0_20px_rgba(108,99,255,0.2)]' : 'border-[#2A2A3E]'
-            }`}
-          >
-            <div className="text-3xl mb-3">{t.emoji}</div>
-            <h3 className="font-sora font-bold text-[#F0F0FF] text-lg">{t.name}</h3>
-            <p className="text-[#6C63FF] font-mono text-sm mb-3">{t.price}</p>
-            <ul className="space-y-1.5 mb-6 flex-1">
-              {t.perks.map(p => (
-                <li key={p} className="text-xs text-[#8888AA] flex items-start gap-2">
-                  <span className="text-[#6C63FF] mt-0.5">✓</span> {p}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => selectTier(t.id)}
-              className="py-2.5 rounded-full bg-[#6C63FF] text-white text-sm font-medium hover:bg-[#5A52E0] transition-colors"
-            >
-              Get Started
-            </button>
+      <div className="relative max-w-5xl mx-auto px-6 py-20">
+        {/* header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 mb-5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-white/60 text-[10px] tracking-[0.22em] uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF]" />
+            Protocol Sponsors
           </div>
-        ))}
-      </div>
+          <h1 className="font-display font-black text-white text-[clamp(36px,6vw,72px)] tracking-tight leading-[0.95] mb-5">
+            Reach <span className="hero-shimmer">ENS Builders</span>
+          </h1>
+          <p className="text-white/55 text-lg max-w-xl mx-auto leading-relaxed">
+            One dedicated slot in the Protocol Sponsors section — your logo, your link, seen by every ENS builder on the platform.
+          </p>
+        </div>
 
-      {/* Contact form */}
-      <div ref={formRef} className="bg-[#12121A] border border-[#2A2A3E] rounded-2xl p-8 max-w-lg mx-auto">
-        <h2 className="font-sora font-bold text-[#F0F0FF] text-xl mb-6">Get in Touch</h2>
-
-        {result === 'success' ? (
-          <div className="text-center py-8">
-            <p className="text-3xl mb-3">🎉</p>
-            <p className="text-[#F0F0FF] font-semibold">Inquiry sent!</p>
-            <p className="text-[#8888AA] text-sm mt-1">We&apos;ll reach out within 48 hours.</p>
-            <button
-              onClick={() => setResult('')}
-              className="mt-4 text-xs text-[#6C63FF] hover:underline"
-            >
-              Send another
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={onSubmit} className="space-y-4">
-            {/* Hidden tier field passed to Web3Forms */}
-            <input type="hidden" name="tier" value={tier} />
-
-            {/* Tier selector */}
-            <div className="grid grid-cols-3 gap-2">
-              {TIERS.map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTier(t.id)}
-                  className={`py-1.5 rounded-lg border text-xs transition-colors ${
-                    tier === t.id ? 'border-[#6C63FF] bg-[#6C63FF]/10 text-[#6C63FF]' : 'border-[#2A2A3E] text-[#8888AA]'
-                  }`}
-                >
-                  {t.emoji} {t.name}
-                </button>
-              ))}
+        <div className="grid md:grid-cols-[1fr_1.6fr] gap-10 items-start">
+          {/* left: what you get */}
+          <div className="space-y-6">
+            <div>
+              <div className="text-[11px] tracking-[0.22em] uppercase text-white/40 mb-4">What&apos;s included</div>
+              <div className="space-y-3">
+                {WHAT_YOU_GET.map(item => (
+                  <div key={item.label} className="flex items-start gap-3 p-4 rounded-2xl bg-white/[0.025] border border-white/[0.06]">
+                    <span className="text-[#6C63FF] text-lg mt-0.5 flex-shrink-0">{item.icon}</span>
+                    <p className="text-[13.5px] text-white/70 leading-relaxed">{item.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <input
-              type="text"
-              name="name"
-              required
-              placeholder="Name"
-              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF]"
-            />
-            <input
-              type="text"
-              name="company"
-              required
-              placeholder="Company / Project"
-              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF]"
-            />
-            <input
-              type="email"
-              name="email"
-              required
-              placeholder="Email"
-              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF]"
-            />
-            <textarea
-              name="message"
-              rows={3}
-              placeholder="Message (optional)"
-              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF] resize-none"
-            />
+            <div className="p-5 rounded-2xl border border-white/[0.06]" style={{
+              background: 'linear-gradient(140deg, rgba(108,99,255,0.06), rgba(0,212,255,0.03) 60%, transparent)',
+            }}>
+              <div className="text-[11px] tracking-[0.22em] uppercase text-white/40 mb-3">Pricing</div>
+              <div className="font-display font-black text-white text-4xl tracking-tight">
+                1 ETH<span className="text-white/40 text-xl font-normal"> /mo</span>
+              </div>
+              <p className="mt-2 text-[12px] text-white/40 leading-relaxed">
+                4 slots total · quarterly billing · on-chain receipt
+              </p>
+              <div className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] text-white/35 leading-relaxed">
+                No tiers, no newsletter, no hero placement.
+              </div>
+            </div>
+          </div>
 
-            {result === 'error' && (
-              <p className="text-red-400 text-xs">Something went wrong. Please try again.</p>
-            )}
+          {/* right: form */}
+          <div className="sm-modal relative rounded-[22px]">
+            <div className="sm-frame absolute inset-0 pointer-events-none rounded-[22px]" />
+            <div className="relative bg-[#141421] rounded-[22px] overflow-hidden">
+              <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden" style={{
+                background: 'radial-gradient(420px 180px at 90% -40%, rgba(0,212,255,0.14), transparent 60%), radial-gradient(420px 200px at 0% -30%, rgba(108,99,255,0.18), transparent 60%)',
+              }} />
 
-            <button
-              type="submit"
-              disabled={!tier || result === 'Sending…'}
-              className="w-full py-3 rounded-full bg-[#6C63FF] text-white font-medium hover:bg-[#5A52E0] transition-colors disabled:opacity-50"
-            >
-              {result === 'Sending…' ? 'Sending…' : 'Send Inquiry'}
-            </button>
-          </form>
-        )}
+              <div className="relative px-7 pt-6 pb-5">
+                <div className="inline-flex items-center gap-2 mb-3 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-white/60 text-[10px] tracking-[0.22em] uppercase">
+                  <span className="w-1 h-1 rounded-full bg-[#6C63FF]" />
+                  Sponsor Inquiry
+                </div>
+                <h2 className="font-display font-semibold text-white text-[22px] tracking-tight leading-tight">
+                  Apply for a <span className="sm-grad">Sponsor Slot</span>
+                </h2>
+                <p className="mt-1.5 text-[13px] text-white/50">One tile · your logo · your link.</p>
+              </div>
+
+              <div className="relative h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+              <div className="relative px-7 pt-6 pb-6">
+                <SponsorForm />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

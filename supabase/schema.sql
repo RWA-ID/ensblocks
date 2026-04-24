@@ -64,6 +64,11 @@ create table sponsor_inquiries (
   company      text not null,
   email        text not null,
   tier         text not null,
+  url          text,
+  logo_url     text,
   message      text,
   created_at   timestamptz default now()
 );
+-- Migration (run if table already exists):
+-- alter table sponsor_inquiries add column if not exists url text;
+-- alter table sponsor_inquiries add column if not exists logo_url text;

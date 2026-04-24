@@ -219,3 +219,93 @@ body {
 }
 
 ::selection { background: rgba(108,99,255,0.35); color: #fff; }
+
+/* ── SPONSOR MODAL ── */
+.sm-modal {
+  box-shadow: 0 40px 120px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+}
+.sm-frame {
+  padding: 1px;
+  background: linear-gradient(140deg, rgba(108,99,255,0.6) 0%, rgba(155,140,255,0.3) 25%, rgba(0,212,255,0.45) 55%, rgba(108,99,255,0.2) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+.sm-close {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.sm-close:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.14); }
+.sm-grad {
+  background: linear-gradient(100deg, #9B8CFF 0%, #00D4FF 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sm-field {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.sm-field:hover { border-color: rgba(255,255,255,0.12); }
+.sm-field--focus, .sm-field:focus-within {
+  border-color: rgba(108,99,255,0.55);
+  background: rgba(108,99,255,0.04);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.12), 0 0 24px -6px rgba(108,99,255,0.3);
+}
+.sm-tabs {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.sm-drop {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(255,255,255,0.12);
+  transition: all .2s ease;
+}
+.sm-drop:hover { background: rgba(108,99,255,0.04); border-color: rgba(108,99,255,0.35); }
+.sm-drop--drag {
+  background: rgba(108,99,255,0.08);
+  border-color: rgba(108,99,255,0.6); border-style: solid;
+  box-shadow: 0 0 30px -6px rgba(108,99,255,0.4);
+}
+.sm-upload-icon { background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.2); }
+.sm-logo-preview { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.sm-preview {
+  background: linear-gradient(140deg, rgba(108,99,255,0.06), rgba(0,212,255,0.03) 60%, rgba(255,255,255,0.01) 100%), rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.sm-slot {
+  background: linear-gradient(140deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01) 100%), #10101A;
+  border: 1px solid rgba(108,99,255,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 30px -10px rgba(108,99,255,0.3);
+}
+.sm-slot-mono { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+.sm-submit {
+  background: linear-gradient(140deg, #7A71FF 0%, #6C63FF 50%, #5A52E6 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 10px 28px -8px rgba(108,99,255,0.55), 0 0 0 1px rgba(108,99,255,0.45);
+  transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+}
+.sm-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 16px 38px -8px rgba(108,99,255,0.7), 0 0 0 1px rgba(108,99,255,0.65);
+}
+.sm-submit:active { transform: translateY(0); }
+.sm-submit--disabled, .sm-submit--disabled:hover {
+  opacity: 0.45; transform: none; cursor: not-allowed;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 0 0 1px rgba(108,99,255,0.3);
+}
+.sm-success-ring {
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.3);
+  box-shadow: 0 0 40px -8px rgba(0,212,255,0.4);
+}
+.sm-backdrop { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.sm-modal-scroll { max-height: calc(100vh - 48px); overflow-y: auto; }
+.sm-modal-scroll::-webkit-scrollbar { width: 6px; }
+.sm-modal-scroll::-webkit-scrollbar-track { background: transparent; }
+.sm-modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+@keyframes smFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes smRise {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sm-backdrop > div:first-child { animation: smFadeIn 0.25s ease-out; }
+.sm-modal { animation: smRise 0.35s cubic-bezier(0.22,1,0.36,1); }
