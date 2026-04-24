@@ -3,7 +3,10 @@ const isIPFS = process.env.BUILD_TARGET === 'ipfs'
 
 const nextConfig = {
   ...(isIPFS ? { output: 'export', trailingSlash: true, images: { unoptimized: true } } : {}),
+  staticPageGenerationTimeout: 180,
   experimental: {
+    workerThreads: false,
+    cpus: 1,
     serverComponentsExternalPackages: [
       '@xmtp/user-preferences-bindings-wasm',
       'viem',
