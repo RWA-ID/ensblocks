@@ -58,6 +58,26 @@ returns void language sql as $$
   where wallet_address = p_wallet;
 $$;
 
+create table builder_profiles (
+  wallet_address   text primary key,
+  display_name     text,
+  bio              text,
+  avatar_ipfs      text,
+  twitter          text,
+  github           text,
+  telegram         text,
+  discord          text,
+  website          text,
+  created_at       timestamptz default now(),
+  updated_at       timestamptz default now()
+);
+
+alter table builder_profiles enable row level security;
+create policy "Public read" on builder_profiles for select using (true);
+
+-- Migration (run if table does not exist):
+-- (see above DDL)
+
 create table sponsor_inquiries (
   id           uuid primary key default uuid_generate_v4(),
   name         text not null,

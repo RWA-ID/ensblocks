@@ -150,3 +150,61 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Unexpected server error' }, { status: 500 })
   }
 }
+
+const EDITABLE_FIELDS = [
+  'name', 'tagline', 'category', 'short_desc', 'long_desc', 'founder_name',
+  'wallet_address', 'contact_email', 'contact_telegram', 'contact_twitter',
+  'contact_discord', 'website_url', 'github_url', 'demo_url',
+  'ipfs_pitch_deck', 'ipfs_images', 'seeking_funding',
+]
+
+export async function PATCH(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+    if (!id) return NextResponse.json({ error: 'Project id required' }, { status: 400 })
+
+    const submitter = req.headers.get('x-submitter')
+    if (!submitter) return NextResponse.json({ error: 'Wallet not connected' }, { status: 401 })
+
+    let submitterAddress: string
+    try {
+      submitterAddress = getAddress(submitter)
+    } catch {
+      return NextResponse.json({ error: 'Invalid submitter address' }, { status: 400 })
+    }
+
+    const db = supabaseAdmin()
+    const { data: project, error: fetchErr } = await db
+      .from('projects').select('submitter_address, ens_domain').eq('id', id).single()
+    if (fetchErr || !project) return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+
+    if (project.submitter_address.toLowerCase() !== submitterAddress.toLowerCase()) {
+      return NextResponse.json({ error: 'Only the project owner can edit this listing' }, { status: 403 })
+    }
+
+    // Re-verify ENS ownership so a transferred ENS can't be edited by old owner
+    const ensOwner = await getEnsOwner(project.ens_domain)
+    if (ensOwner && ensOwner.toLowerCase() !== submitterAddress.toLowerCase()) {
+      return NextResponse.json({ error: 'ENS domain ownership has changed — edit not allowed' }, { status: 403 })
+    }
+
+    const body = await req.json()
+    const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
+    for (const field of EDITABLE_FIELDS) {
+      if (field in body) updates[field] = body[field] ?? null
+    }
+
+    if (updates.wallet_address) {
+      try { updates.wallet_address = getAddress(updates.wallet_address as string) }
+      catch { return NextResponse.json({ error: 'Invalid donation wallet address' }, { status: 400 }) }
+    }
+
+    const { data, error } = await db.from('projects').update(updates).eq('id', id).select().single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(data)
+  } catch (e: unknown) {
+    console.error('PATCH /api/projects error:', e)
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'Unexpected server error' }, { status: 500 })
+  }
+}

@@ -5,9 +5,13 @@ import { useParams } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Project } from '@/types'
+import { BuilderProfile } from '@/types/builder'
 import Link from 'next/link'
 import DonateButton from '@/components/donate/DonateButton'
 import XMTPChatModal from '@/components/modals/XMTPChatModal'
+import EditProjectModal from '@/components/modals/EditProjectModal'
+import BuilderProfileEditModal from '@/components/modals/BuilderProfileEditModal'
+import BuilderProfileCard from '@/components/project/BuilderProfileCard'
 import { useDonationTotal } from '@/hooks/useDonationTotal'
 import ReactMarkdown from 'react-markdown'
 
@@ -16,8 +20,11 @@ export default function ProjectClient() {
   const { isConnected, address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const [project, setProject] = useState<Project | null>(null)
+  const [builderProfile, setBuilderProfile] = useState<BuilderProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [fundOpen, setFundOpen] = useState(false)
+  const [editProjectOpen, setEditProjectOpen] = useState(false)
+  const [editProfileOpen, setEditProfileOpen] = useState(false)
   const pendingFund = useRef(false)
   const [lightbox, setLightbox] = useState<string | null>(null)
   const { total, count } = useDonationTotal(project?.wallet_address ?? '')
@@ -41,7 +48,17 @@ export default function ProjectClient() {
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/projects?id=${id}`)
       .then(r => r.json())
-      .then(d => { setProject(d); setLoading(false) })
+      .then((d: Project) => {
+        setProject(d)
+        setLoading(false)
+        // Fetch builder profile once we know the submitter
+        if (d.submitter_address) {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/builder-profile?wallet=${d.submitter_address}`)
+            .then(r => r.json())
+            .then(p => setBuilderProfile(p))
+            .catch(() => {})
+        }
+      })
       .catch(() => setLoading(false))
   }, [id])
 
@@ -63,6 +80,7 @@ export default function ProjectClient() {
   }
 
   const IPFS = 'https://gateway.pinata.cloud/ipfs'
+  const isOwner = isConnected && address?.toLowerCase() === project.submitter_address?.toLowerCase()
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -79,14 +97,24 @@ export default function ProjectClient() {
                 {project.category}
               </span>
             </div>
-            <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.link/project/${project.id}`)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors flex-shrink-0"
-            >
-              𝕏 Share
-            </a>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {isOwner && (
+                <button
+                  onClick={() => setEditProjectOpen(true)}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] hover:bg-[#6C63FF]/10 transition-colors"
+                >
+                  ✏️ Edit listing
+                </button>
+              )}
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.link/project/${project.id}`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors"
+              >
+                𝕏 Share
+              </a>
+            </div>
           </div>
           {project.founder_name && (
             <p className="text-[#8888AA] text-sm mb-1">by {project.founder_name}</p>
@@ -197,6 +225,27 @@ export default function ProjectClient() {
               )}
             </div>
 
+            {/* Builder profile */}
+            {builderProfile && (
+              <BuilderProfileCard
+                profile={builderProfile}
+                founderName={project.founder_name}
+                onEdit={isOwner ? () => setEditProfileOpen(true) : undefined}
+              />
+            )}
+
+            {/* Prompt owner to set up profile if they haven't */}
+            {isOwner && !builderProfile && (
+              <div className="border-t border-[#2A2A3E] pt-4">
+                <button
+                  onClick={() => setEditProfileOpen(true)}
+                  className="w-full py-2 rounded-xl border border-dashed border-[#2A2A3E] text-xs text-[#8888AA] hover:border-[#6C63FF]/50 hover:text-[#6C63FF] transition-colors"
+                >
+                  + Add builder profile
+                </button>
+              </div>
+            )}
+
             <div className="border-t border-[#2A2A3E] pt-3">
               <p className="text-[10px] text-yellow-400/70">
                 ⚠ This platform does not custody funds. All donations go directly to project owners&apos; wallets.
@@ -214,6 +263,23 @@ export default function ProjectClient() {
         </Link>
       </div>
 
+      {/* Modals */}
+      {editProjectOpen && project && (
+        <EditProjectModal
+          project={project}
+          onClose={() => setEditProjectOpen(false)}
+          onSaved={updated => setProject(updated)}
+        />
+      )}
+
+      {editProfileOpen && (
+        <BuilderProfileEditModal
+          profile={builderProfile}
+          onClose={() => setEditProfileOpen(false)}
+          onSaved={saved => setBuilderProfile(saved)}
+        />
+      )}
+
       {fundOpen && (
         <XMTPChatModal
           recipientAddress={project.wallet_address}
@@ -221,6 +287,7 @@ export default function ProjectClient() {
           onClose={() => setFundOpen(false)}
         />
       )}
+
       {lightbox && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
