@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'ensblocks.eth <noreply@ensblocks.eth>',
+        from: 'ensblocks.eth <noreply@mail.onchain-id.id>',
         to: process.env.SPONSOR_INQUIRY_EMAIL ?? 'info@onchain-id.id',
         subject: `New Sponsor Inquiry from ${name}`,
         text: `Protocol: ${name}\nEmail: ${email}\nURL: ${url ?? 'N/A'}\nLogo: ${logo_url ?? 'N/A'}\nMessage: ${message ?? 'N/A'}`,
