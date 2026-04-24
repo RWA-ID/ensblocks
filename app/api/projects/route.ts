@@ -43,11 +43,13 @@ export async function GET(req: Request) {
   const category = searchParams.get('category')
   const sort = searchParams.get('sort') ?? 'donation_total'
   const search = searchParams.get('q')
+  const submitter = searchParams.get('submitter')
   const page = parseInt(searchParams.get('page') ?? '1')
   const limit = 12
 
   let query = db.from('projects').select('*').range((page - 1) * limit, page * limit - 1)
 
+  if (submitter) query = query.eq('submitter_address', submitter)
   if (category) query = query.eq('category', category)
   if (search) query = query.or(`name.ilike.%${search}%,tagline.ilike.%${search}%,ens_domain.ilike.%${search}%`)
 
