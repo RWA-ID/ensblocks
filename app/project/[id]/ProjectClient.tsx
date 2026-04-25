@@ -107,7 +107,7 @@ export default function ProjectClient() {
                 </button>
               )}
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.link/project/${project.id}`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project/${project.id}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors"
