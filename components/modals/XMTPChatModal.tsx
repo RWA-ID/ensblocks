@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Client } from '@xmtp/xmtp-js'
-import { createEOASigner } from '@/lib/xmtp'
 
 interface XMTPChatModalProps {
   recipientAddress: string
@@ -36,10 +35,11 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
     if (!walletClient || !address) return
     setStatus('connecting')
     try {
-      const signer = createEOASigner(address, walletClient)
-      const xmtp = await Client.create(signer, { env: 'production' })
+      const signer = { getAddress: async () => address, signMessage: async (msg: string) => walletClient.signMessage({ account: address, message: msg }) }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const xmtp = await Client.create(signer as any, { env: 'production' })
 
-      const can = await Client.canMessage(recipientAddress)
+      const can = await Client.canMessage(recipientAddress, { env: 'production' })
       setCanMessage(can)
 
       if (can) {
