@@ -22,6 +22,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'connecting' | 'ready' | 'error'>('idle')
+  const [connectStep, setConnectStep] = useState('')
   const [canMessage, setCanMessage] = useState<boolean | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
   const [sending, setSending] = useState(false)
@@ -38,6 +39,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
     if (!isConnected) { openConnectModal?.(); return }
     if (!walletClient || !address) return
     setStatus('connecting')
+    setConnectStep('Loading encrypted messaging engine…')
     setErrorMsg('')
     try {
       const recipientIdentifier = {
@@ -57,9 +59,11 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
         },
       }
 
+      setConnectStep('Sign the prompts in your wallet to enable messaging…')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const xmtp = await Client.create(signer, { env: 'production' } as any)
       setMyInboxId(xmtp.inboxId ?? '')
+      setConnectStep('Setting up your inbox…')
 
       const canMap = await xmtp.canMessage([recipientIdentifier])
       const can = canMap.get(recipientAddress.toLowerCase()) ?? false
@@ -138,8 +142,9 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
           )}
 
           {status === 'connecting' && (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-[#8888AA] text-sm animate-pulse">Connecting to XMTP…</p>
+            <div className="flex flex-col items-center justify-center h-full gap-3">
+              <div className="w-6 h-6 border-2 border-[#6C63FF] border-t-transparent rounded-full animate-spin" />
+              <p className="text-[#8888AA] text-sm text-center px-4">{connectStep}</p>
             </div>
           )}
 

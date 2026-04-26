@@ -39,6 +39,14 @@ export default function ProjectClient() {
     }
   }, [isConnected])
 
+  // Pre-warm the XMTP WASM + worker as soon as the wallet is connected
+  // so the module is already loaded when the user opens the chat modal
+  useEffect(() => {
+    if (isConnected) {
+      import('@xmtp/browser-sdk').catch(() => {})
+    }
+  }, [isConnected])
+
   function handleFundClick() {
     if (!isConnected) {
       pendingFund.current = true
