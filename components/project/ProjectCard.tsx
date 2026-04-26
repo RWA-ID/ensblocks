@@ -24,7 +24,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <div className="group bg-[#1A1A26] border border-[#2A2A3E] rounded-2xl overflow-hidden hover:-translate-y-1 hover:border-[#6C63FF]/60 hover:shadow-[0_0_20px_rgba(108,99,255,0.15)] transition-all duration-200">
-      <Link href={`/project/${project.id}`}>
+      <Link href={`/project?id=${project.id}`}>
         {coverImage ? (
           <img
             src={`https://gateway.pinata.cloud/ipfs/${coverImage}`}
@@ -62,7 +62,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           compact
         />
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project/${project.id}`)}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project?id=${project.id}`)}`}
           target="_blank"
           rel="noreferrer"
           onClick={e => e.stopPropagation()}

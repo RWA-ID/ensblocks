@@ -3,13 +3,10 @@ import { renameSync, copyFileSync, existsSync } from 'fs'
 import { resolve } from 'path'
 
 const root = process.cwd()
-const projectDir = resolve(root, 'app/project')
-const projectBak = resolve(root, 'app/_project_bak')
 const apiDir = resolve(root, 'app/api')
 const apiBak = resolve(root, 'app/_api_bak')
 
-// Hide dynamic routes — all API calls go to Vercel from IPFS anyway
-renameSync(projectDir, projectBak)
+// Hide API routes — all API calls go to Vercel from IPFS anyway
 renameSync(apiDir, apiBak)
 
 let buildOk = false
@@ -20,14 +17,11 @@ try {
   )
   buildOk = true
 } finally {
-  renameSync(projectBak, projectDir)
   renameSync(apiBak, apiDir)
-  console.log('✓ Restored app/project and app/api')
+  console.log('✓ Restored app/api')
 }
 
 if (buildOk) {
-  // SPA fallback: Pinata gateway serves 404.html for unknown paths,
-  // allowing client-side routing to handle /project/[id] URLs
   const outIndex = resolve(root, 'out/index.html')
   const out404   = resolve(root, 'out/404.html')
   if (existsSync(outIndex)) {

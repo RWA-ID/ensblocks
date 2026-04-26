@@ -250,10 +250,10 @@ function FeaturedCard({ project }: { project: Project }) {
   const glyph = CATEGORY_GLYPHS[project.category] ?? '◇'
   const coverImage = project.ipfs_images?.[0]
 
-  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project/${project.id}`)}`
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project?id=${project.id}`)}`
 
   return (
-    <Link href={`/project/${project.id}`} className="relative group block">
+    <Link href={`/project?id=${project.id}`} className="relative group block">
       <article className="featured-card relative shrink-0 w-[340px] sm:w-[380px] rounded-[22px] overflow-hidden">
         {coverImage ? (
           <img src={`https://gateway.pinata.cloud/ipfs/${coverImage}`} alt={project.name} className="w-full aspect-[4/3] object-cover" />
@@ -356,10 +356,10 @@ function NewCard({ project, hero, delay }: { project: Project; hero?: boolean; d
     return () => obs.disconnect()
   }, [delay])
 
-  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project/${project.id}`)}`
+  const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\nhttps://ensblocks.eth.limo/project?id=${project.id}`)}`
 
   return (
-    <Link href={`/project/${project.id}`} className="block">
+    <Link href={`/project?id=${project.id}`} className="block">
       <article
         ref={ref}
         className={`new-card relative rounded-[20px] overflow-hidden transition-all duration-700 cursor-pointer ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'} ${hero ? 'new-card-hero md:col-span-2 md:row-span-2' : ''}`}
