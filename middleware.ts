@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
       status: 204,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, x-submitter',
       },
     })
@@ -15,7 +15,7 @@ export function middleware(req: NextRequest) {
 
   const res = NextResponse.next()
   res.headers.set('Access-Control-Allow-Origin', '*')
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS')
   res.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-submitter')
   return res
 }
