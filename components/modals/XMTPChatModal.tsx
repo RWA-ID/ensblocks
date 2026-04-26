@@ -37,7 +37,6 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
     setStatus('connecting')
     try {
       const signer = createEOASigner(address, walletClient)
-      // @ts-expect-error — XMTP signer type compat
       const xmtp = await Client.create(signer, { env: 'production' })
 
       const can = await Client.canMessage(recipientAddress)
