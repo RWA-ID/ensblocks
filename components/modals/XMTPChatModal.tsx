@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { Client, IdentifierKind } from '@xmtp/browser-sdk'
+import { Client, IdentifierKind, type XmtpEnv } from '@xmtp/browser-sdk'
 import { toBytes } from 'viem'
 
 interface XMTPChatModalProps {
@@ -57,7 +57,8 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
         },
       }
 
-      const xmtp = await Client.create(signer, { env: 'production' })
+      const env: XmtpEnv = 'production'
+      const xmtp = await Client.create(signer, { env })
       setMyInboxId(xmtp.inboxId)
 
       const canMap = await xmtp.canMessage([recipientIdentifier])
