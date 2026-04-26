@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { Project } from '@/types'
@@ -17,8 +16,10 @@ import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 
 export default function ProjectClient() {
-  const searchParams = useSearchParams()
-  const id = searchParams.get('id')
+  const [id, setId] = useState<string | null>(null)
+  useEffect(() => {
+    setId(window.location.hash.slice(1) || new URLSearchParams(window.location.search).get('id'))
+  }, [])
   const { isConnected, address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const [project, setProject] = useState<Project | null>(null)
@@ -83,7 +84,7 @@ export default function ProjectClient() {
 
   const IPFS = 'https://gateway.pinata.cloud/ipfs'
   const isOwner = isConnected && address?.toLowerCase() === project.submitter_address?.toLowerCase()
-  const projectUrl = `https://ensblocks.eth.limo/project?id=${project.id}`
+  const projectUrl = `https://ensblocks.eth.limo/project#${project.id}`
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -110,7 +111,7 @@ export default function ProjectClient() {
                 </button>
               )}
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on ensblocks.eth!\n\n"${project.tagline}"\n\n${projectUrl}`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${project.name} (${project.ens_domain}) on @ensblocks!\n\n"${project.tagline}"\n\nFollow @ensblocks for more ENS projects 👇\n\n${projectUrl}`)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-full border border-[#2A2A3E] text-[#8888AA] hover:border-[#F0F0FF] hover:text-[#F0F0FF] transition-colors"
