@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { Client } from '@xmtp/xmtp-js'
+import { Client, IdentifierKind } from '@xmtp/browser-sdk'
+import { toBytes } from 'viem'
 
 interface XMTPChatModalProps {
   recipientAddress: string
@@ -11,7 +12,7 @@ interface XMTPChatModalProps {
   onClose: () => void
 }
 
-type Message = { id: string; senderAddress: string; content: string; sent: Date }
+type Message = { id: string; senderInboxId: string; content: string; sentAt: Date }
 
 export default function XMTPChatModal({ recipientAddress, recipientName, onClose }: XMTPChatModalProps) {
   const { address, isConnected } = useAccount()
@@ -21,10 +22,12 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'connecting' | 'ready' | 'error'>('idle')
-  const [errorMsg, setErrorMsg] = useState('')
   const [canMessage, setCanMessage] = useState<boolean | null>(null)
+  const [errorMsg, setErrorMsg] = useState('')
   const [sending, setSending] = useState(false)
-  const conversationRef = useRef<Awaited<ReturnType<Client['conversations']['newConversation']>> | null>(null)
+  const [myInboxId, setMyInboxId] = useState('')
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conversationRef = useRef<any>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -35,23 +38,43 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
     if (!isConnected) { openConnectModal?.(); return }
     if (!walletClient || !address) return
     setStatus('connecting')
+    setErrorMsg('')
     try {
-      const signer = { getAddress: async () => address, signMessage: async (msg: string) => walletClient.signMessage({ account: address, message: msg }) }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const xmtp = await Client.create(signer as any, { env: 'production' })
+      const recipientIdentifier = {
+        identifier: recipientAddress.toLowerCase(),
+        identifierKind: IdentifierKind.Ethereum,
+      }
 
-      const can = await Client.canMessage(recipientAddress, { env: 'production' })
+      const signer = {
+        type: 'EOA' as const,
+        getIdentifier: () => ({
+          identifier: address.toLowerCase(),
+          identifierKind: IdentifierKind.Ethereum,
+        }),
+        signMessage: async (message: string): Promise<Uint8Array> => {
+          const sig = await walletClient.signMessage({ account: address, message })
+          return toBytes(sig)
+        },
+      }
+
+      const xmtp = await Client.create(signer, { env: 'production' })
+      setMyInboxId(xmtp.inboxId)
+
+      const canMap = await xmtp.canMessage([recipientIdentifier])
+      const can = canMap.get(recipientAddress.toLowerCase()) ?? false
       setCanMessage(can)
 
       if (can) {
-        const convo = await xmtp.conversations.newConversation(recipientAddress)
+        await xmtp.conversations.sync()
+        const convo = await xmtp.conversations.createDmWithIdentifier(recipientIdentifier)
+        await convo.sync()
         conversationRef.current = convo
         const history = await convo.messages()
         setMessages(history.map(m => ({
           id: m.id,
-          senderAddress: m.senderAddress,
-          content: m.content as string,
-          sent: m.sent,
+          senderInboxId: m.senderInboxId,
+          content: typeof m.content === 'string' ? m.content : '',
+          sentAt: m.sentAt,
         })))
       }
       setStatus('ready')
@@ -67,12 +90,12 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
     if (!input.trim() || !conversationRef.current) return
     setSending(true)
     try {
-      await conversationRef.current.send(input.trim())
+      await conversationRef.current.sendText(input.trim())
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        senderAddress: address!,
+        senderInboxId: myInboxId,
         content: input.trim(),
-        sent: new Date(),
+        sentAt: new Date(),
       }])
       setInput('')
     } finally {
@@ -141,7 +164,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
                 <p className="text-center text-xs text-[#8888AA] pt-4">No messages yet. Say hi!</p>
               )}
               {messages.map(m => {
-                const isMine = m.senderAddress.toLowerCase() === address?.toLowerCase()
+                const isMine = m.senderInboxId === myInboxId
                 return (
                   <div key={m.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${

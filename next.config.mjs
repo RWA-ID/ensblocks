@@ -9,6 +9,8 @@ const nextConfig = {
     cpus: 1,
     serverComponentsExternalPackages: [
       '@xmtp/user-preferences-bindings-wasm',
+      '@xmtp/browser-sdk',
+      '@xmtp/wasm-bindings',
       'viem',
       'ox',
     ],
@@ -32,6 +34,8 @@ const nextConfig = {
       config.resolve.alias['ox/_esm/tempo/VirtualMaster'] = false
       config.resolve.alias['ox/_esm/tempo/VirtualMaster.js'] = false
     }
+
+    config.experiments = { ...config.experiments, asyncWebAssembly: true }
 
     return config
   },
