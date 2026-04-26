@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { Client, IdentifierKind } from '@xmtp/browser-sdk'
+import { Client, IdentifierKind, GroupMessageKind, SortDirection } from '@xmtp/browser-sdk'
 import { toBytes } from 'viem'
 
 interface XMTPChatModalProps {
@@ -70,17 +70,22 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
       setCanMessage(can)
 
       if (can) {
-        await xmtp.conversations.sync()
+        await xmtp.conversations.syncAll()
         const convo = await xmtp.conversations.createDmWithIdentifier(recipientIdentifier)
         await convo.sync()
         conversationRef.current = convo
-        const history = await convo.messages()
-        setMessages(history.map(m => ({
-          id: m.id,
-          senderInboxId: m.senderInboxId,
-          content: typeof m.content === 'string' ? m.content : '',
-          sentAt: m.sentAt,
-        })))
+        const history = await convo.messages({
+          kind: GroupMessageKind.Application,
+          direction: SortDirection.Ascending,
+        })
+        setMessages(history
+          .filter(m => typeof m.content === 'string' && m.content.length > 0)
+          .map(m => ({
+            id: m.id,
+            senderInboxId: m.senderInboxId,
+            content: m.content as string,
+            sentAt: m.sentAt,
+          })))
       }
       setStatus('ready')
     } catch (e: unknown) {
