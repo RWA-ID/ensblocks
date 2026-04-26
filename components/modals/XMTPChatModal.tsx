@@ -59,7 +59,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const xmtp = await Client.create(signer, { env: 'production' } as any)
-      setMyInboxId(xmtp.inboxId)
+      setMyInboxId(xmtp.inboxId ?? '')
 
       const canMap = await xmtp.canMessage([recipientIdentifier])
       const can = canMap.get(recipientAddress.toLowerCase()) ?? false
