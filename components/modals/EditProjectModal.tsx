@@ -123,10 +123,10 @@ export default function EditProjectModal({ project, onClose, onSaved }: Props) {
             <textarea
               required
               maxLength={280}
-              rows={3}
+              rows={4}
               value={form.short_desc}
               onChange={e => set('short_desc', e.target.value)}
-              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF] resize-none"
+              className="w-full bg-[#1A1A26] border border-[#2A2A3E] rounded-xl px-4 py-2.5 text-sm text-[#F0F0FF] placeholder-[#8888AA] focus:outline-none focus:border-[#6C63FF] resize-y"
             />
           </div>
 
