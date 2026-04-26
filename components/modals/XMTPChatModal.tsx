@@ -21,6 +21,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'connecting' | 'ready' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
   const [canMessage, setCanMessage] = useState<boolean | null>(null)
   const [sending, setSending] = useState(false)
   const conversationRef = useRef<Awaited<ReturnType<Client['conversations']['newConversation']>> | null>(null)
@@ -54,7 +55,10 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
         })))
       }
       setStatus('ready')
-    } catch {
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error('XMTP connect error:', msg)
+      setErrorMsg(msg)
       setStatus('error')
     }
   }
@@ -116,8 +120,9 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
           )}
 
           {status === 'error' && (
-            <div className="flex flex-col items-center justify-center h-full gap-3">
-              <p className="text-red-400 text-sm">Failed to connect.</p>
+            <div className="flex flex-col items-center justify-center h-full gap-3 px-4">
+              <p className="text-red-400 text-sm text-center">Failed to connect.</p>
+              {errorMsg && <p className="text-red-400/70 text-xs text-center break-all">{errorMsg}</p>}
               <button onClick={connect} className="text-xs text-[#6C63FF] hover:underline">Try again</button>
             </div>
           )}
