@@ -70,7 +70,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
       setConnectStep('Loading your inbox…')
 
       await xmtp.conversations.syncAll()
-      const dms = xmtp.conversations.listDms()
+      const dms = await xmtp.conversations.listDms()
 
       const summaries: ConvoSummary[] = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
