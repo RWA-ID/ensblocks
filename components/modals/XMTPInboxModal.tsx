@@ -44,6 +44,26 @@ export default function XMTPInboxModal({ onClose }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  useEffect(() => {
+    if (!activeConvo || !convoRef.current) return
+    const interval = setInterval(async () => {
+      try {
+        await convoRef.current.sync()
+        const msgs = await convoRef.current.messages({
+          kind: GroupMessageKind.Application,
+          direction: SortDirection.Ascending,
+        })
+        setMessages(msgs
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .filter((m: any) => typeof m.content === 'string' && m.content.length > 0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((m: any) => ({ id: m.id, senderInboxId: m.senderInboxId, content: m.content as string, sentAt: m.sentAt }))
+        )
+      } catch { /* silent */ }
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [activeConvo])
+
   async function connect() {
     if (!isConnected) { openConnectModal?.(); return }
     if (!walletClient || !address) return
