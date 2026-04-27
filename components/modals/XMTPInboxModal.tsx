@@ -73,6 +73,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
       const dms = xmtp.conversations.listDms()
 
       const summaries: ConvoSummary[] = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         dms.map(async (dm: any) => {
           const msgs = await dm.messages({
             kind: GroupMessageKind.Application,
@@ -121,7 +122,9 @@ export default function XMTPInboxModal({ onClose }: Props) {
     })
     setMessages(
       history
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((m: any) => typeof m.content === 'string' && m.content.length > 0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map((m: any) => ({
           id: m.id,
           senderInboxId: m.senderInboxId,
