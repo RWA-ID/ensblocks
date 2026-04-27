@@ -73,7 +73,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
       if (can) {
         await xmtp.conversations.syncAll()
         const convo = await xmtp.conversations.createDmWithIdentifier(recipientIdentifier)
-        setDebugInfo(`myInbox: ${xmtp.inboxId?.slice(0,8)}… | peerInbox: ${convo.dmPeerInboxId?.()?.slice(0,8) ?? '?'}… | canMsg: ${can}`)
+        setDebugInfo(`myInbox: ${xmtp.inboxId?.slice(0,8)}… | peerInbox: ${convo.peerInboxId?.slice(0,8) ?? '?'}… | canMsg: ${can}`)
         await convo.sync()
         conversationRef.current = convo
         const history = await convo.messages({
