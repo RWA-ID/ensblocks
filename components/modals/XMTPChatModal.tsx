@@ -27,6 +27,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
   const [errorMsg, setErrorMsg] = useState('')
   const [sending, setSending] = useState(false)
   const [myInboxId, setMyInboxId] = useState('')
+  const [debugInfo, setDebugInfo] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const conversationRef = useRef<any>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -72,6 +73,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
       if (can) {
         await xmtp.conversations.syncAll()
         const convo = await xmtp.conversations.createDmWithIdentifier(recipientIdentifier)
+        setDebugInfo(`myInbox: ${xmtp.inboxId?.slice(0,8)}… | peerInbox: ${convo.dmPeerInboxId?.()?.slice(0,8) ?? '?'}… | canMsg: ${can}`)
         await convo.sync()
         conversationRef.current = convo
         const history = await convo.messages({
@@ -171,6 +173,7 @@ export default function XMTPChatModal({ recipientAddress, recipientName, onClose
 
           {status === 'ready' && canMessage === true && (
             <>
+              {debugInfo && <p className="text-[10px] text-[#6C63FF]/60 font-mono text-center pt-2 px-2 break-all">{debugInfo}</p>}
               {messages.length === 0 && (
                 <p className="text-center text-xs text-[#8888AA] pt-4">No messages yet. Say hi!</p>
               )}
