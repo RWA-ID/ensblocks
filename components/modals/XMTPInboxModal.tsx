@@ -71,6 +71,8 @@ export default function XMTPInboxModal({ onClose }: Props) {
       setConnectStep('Loading your inbox…')
 
       const allStates = [ConsentState.Allowed, ConsentState.Unknown]
+      // sync() discovers new conversations from the network, syncAll() syncs messages in known ones
+      await xmtp.conversations.sync()
       await xmtp.conversations.syncAll(allStates)
       const dms = await xmtp.conversations.listDms({ consentStates: allStates })
       setDebugInfo(`inboxId: ${xmtp.inboxId?.slice(0, 12)}… | DMs found: ${dms.length}`)
