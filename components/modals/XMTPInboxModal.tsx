@@ -110,7 +110,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
   async function openDm(convo: ConvoSummary) {
     if (!xmtpRef.current) return
     setActiveConvo(convo)
-    const dms = xmtpRef.current.conversations.listDms()
+    const dms = await xmtpRef.current.conversations.listDms()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dm = dms.find((d: any) => d.id === convo.id)
     if (!dm) return
