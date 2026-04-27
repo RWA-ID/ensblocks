@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { Client, IdentifierKind, GroupMessageKind, SortDirection } from '@xmtp/browser-sdk'
+import { Client, IdentifierKind, GroupMessageKind, SortDirection, ConsentState } from '@xmtp/browser-sdk'
 import { toBytes } from 'viem'
 
 interface Props {
@@ -69,8 +69,9 @@ export default function XMTPInboxModal({ onClose }: Props) {
       setMyInboxId(xmtp.inboxId ?? '')
       setConnectStep('Loading your inbox…')
 
-      await xmtp.conversations.syncAll()
-      const dms = await xmtp.conversations.listDms()
+      const allStates = [ConsentState.Allowed, ConsentState.Unknown]
+      await xmtp.conversations.syncAll(allStates)
+      const dms = await xmtp.conversations.listDms({ consentStates: allStates })
 
       const summaries: ConvoSummary[] = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
