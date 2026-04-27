@@ -86,9 +86,10 @@ export default function XMTPInboxModal({ onClose }: Props) {
             limit: BigInt(1),
           })
           const last = msgs[0]
+          const peerInboxId = await dm.peerInboxId()
           return {
             id: dm.id,
-            peerInboxId: dm.dmPeerInboxId(),
+            peerInboxId,
             lastMessage: last && typeof last.content === 'string' ? last.content : '',
             lastSentAt: last?.sentAt ?? null,
           }
