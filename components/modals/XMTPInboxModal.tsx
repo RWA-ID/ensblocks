@@ -28,6 +28,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
   const [connectStep, setConnectStep] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [convos, setConvos] = useState<ConvoSummary[]>([])
+  const [debugInfo, setDebugInfo] = useState('')
   const [activeConvo, setActiveConvo] = useState<ConvoSummary | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -72,6 +73,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
       const allStates = [ConsentState.Allowed, ConsentState.Unknown]
       await xmtp.conversations.syncAll(allStates)
       const dms = await xmtp.conversations.listDms({ consentStates: allStates })
+      setDebugInfo(`inboxId: ${xmtp.inboxId?.slice(0, 12)}… | DMs found: ${dms.length}`)
 
       const summaries: ConvoSummary[] = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -208,6 +210,7 @@ export default function XMTPInboxModal({ onClose }: Props) {
                 <div className="flex flex-col items-center justify-center h-full gap-2 text-center px-6">
                   <p className="text-[#8888AA] text-sm">No messages yet.</p>
                   <p className="text-xs text-[#8888AA]/60">When supporters message you, they&apos;ll appear here.</p>
+                  {debugInfo && <p className="text-[10px] text-[#6C63FF]/60 font-mono mt-2">{debugInfo}</p>}
                 </div>
               ) : (
                 <div className="divide-y divide-[#2A2A3E]">
