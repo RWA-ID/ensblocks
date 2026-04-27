@@ -8,6 +8,7 @@ import { BuilderProfile } from '@/types/builder'
 import Link from 'next/link'
 import DonateButton from '@/components/donate/DonateButton'
 import XMTPChatModal from '@/components/modals/XMTPChatModal'
+import XMTPInboxModal from '@/components/modals/XMTPInboxModal'
 import EditProjectModal from '@/components/modals/EditProjectModal'
 import BuilderProfileEditModal from '@/components/modals/BuilderProfileEditModal'
 import BuilderProfileCard from '@/components/project/BuilderProfileCard'
@@ -26,6 +27,7 @@ export default function ProjectClient() {
   const [builderProfile, setBuilderProfile] = useState<BuilderProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [fundOpen, setFundOpen] = useState(false)
+  const [inboxOpen, setInboxOpen] = useState(false)
   const [editProjectOpen, setEditProjectOpen] = useState(false)
   const [editProfileOpen, setEditProfileOpen] = useState(false)
   const pendingFund = useRef(false)
@@ -53,7 +55,11 @@ export default function ProjectClient() {
       openConnectModal?.()
       return
     }
-    setFundOpen(true)
+    if (isOwner) {
+      setInboxOpen(true)
+    } else {
+      setFundOpen(true)
+    }
   }
 
   useEffect(() => {
@@ -210,7 +216,7 @@ export default function ProjectClient() {
               onClick={handleFundClick}
               className="w-full py-2.5 rounded-full border border-[#6C63FF]/50 text-[#6C63FF] text-sm font-medium hover:bg-[#6C63FF]/10 transition-colors"
             >
-              {isConnected && address?.toLowerCase() === project.wallet_address?.toLowerCase() ? '📬 Messages' : isConnected ? '💬 Message Founder' : 'Connect to Message'}
+              {isOwner ? '📬 Messages' : isConnected ? '💬 Message Founder' : 'Connect to Message'}
             </button>
 
             <div className="border-t border-[#2A2A3E] pt-4 space-y-2 text-xs text-[#8888AA]">
@@ -297,6 +303,10 @@ export default function ProjectClient() {
           recipientName={project.founder_name}
           onClose={() => setFundOpen(false)}
         />
+      )}
+
+      {inboxOpen && (
+        <XMTPInboxModal onClose={() => setInboxOpen(false)} />
       )}
 
       {lightbox && (
